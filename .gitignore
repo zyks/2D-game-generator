@@ -1,0 +1,7 @@
+# Visual Sudio Code
+.vscode
+jsconfig.json
+
+
+# npm
+node_modules/

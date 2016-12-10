@@ -1,0 +1,20 @@
+{
+  "name": "2D-game-generator",
+  "version": "1.0.0",
+  "description": "Node.js application for generating 2D games using Procedural Content Generation (PCG).",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zyks/2D-game-generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zyks/2D-game-generator/issues"
+  },
+  "homepage": "https://github.com/zyks/2D-game-generator#readme"
+}

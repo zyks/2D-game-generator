@@ -8,13 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zyks/2D-game-generator.git"
+    "url": "git+https://gitlab.com/zyks/2D-game-generator.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/zyks/2D-game-generator/issues"
+    "url": "https://gitlab.com/zyks/2D-game-generator/issues"
   },
-  "homepage": "https://github.com/zyks/2D-game-generator#readme"
+  "homepage": "https://gitlab.com/zyks/2D-game-generator#README",
+  "dependencies": {
+    "ejs": "^2.5.5",
+    "express": "^4.14.0"
+  }
 }

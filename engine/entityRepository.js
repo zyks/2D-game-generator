@@ -45,7 +45,7 @@ EntityRepository.prototype.unregisterGroup = function(name) {
 EntityRepository.prototype._entityMatchesGroup = function(entity, groupName) {
     var hits = 0;
     for (component of entity.components.all())
-        if (component.name in this.componentsNamesByGroups)
+        if (component.name in this._componentsNamesByGroup)
             hits++;
     return hits == this._componentsNamesByGroup[groupName].length
 }

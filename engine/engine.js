@@ -24,7 +24,7 @@ Engine.prototype.removeSystem = function(system) {
 }
 
 Engine.prototype.update = function(time) {
-    for (system of self._systems)
+    for (system of this._systems)
         system.update(time);
 }
 

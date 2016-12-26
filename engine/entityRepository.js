@@ -22,6 +22,13 @@ EntityRepository.prototype.clear = function() {
         delete this._entitiesByGroup[name];
 }
 
+EntityRepository.prototype.getById = function(id) {
+    for (let name in this._entitiesByGroup)
+        for(let entity of this._entitiesByGroup[name])
+            if (entity.id === id) return entity;
+    return null;
+}
+
 EntityRepository.prototype.getByGroup = function(name) {
     if (name in this._componentsNamesByGroup)
         return this._entitiesByGroup[name];

@@ -4,28 +4,35 @@ var EntityRepository = function() {
 }
 
 EntityRepository.prototype.add = function(entity) {
-    for (name in self._componentsNamesByGroup)
+    for (let name in this._componentsNamesByGroup)
         if (this._entityMatchesGroup(entity, name))
             this._entitiesByGroup[name].push(entity);
 }
 
 EntityRepository.prototype.remove = function(entity) {
-    for (name in this._entitiesByGroup) {
-        if (entity in this._entitiesByGroup[name]) {
-            var i = this._entitiesByGroup.indexOf(entity);
-            this._entitiesByGroup.splice(i, 1);
-        }
+    for (let name in this._entitiesByGroup) {
+        let i = this._entitiesByGroup[name].indexOf(entity);
+        if (i >= 0)
+            this._entitiesByGroup[name].splice(i, 1);
     }
 }
 
 EntityRepository.prototype.clear = function() {
-    for (name in this._entitiesByGroup)
+    for (let name in this._entitiesByGroup)
         delete this._entitiesByGroup[name];
+}
+
+EntityRepository.prototype.getById = function(id) {
+    for (let name in this._entitiesByGroup)
+        for(let entity of this._entitiesByGroup[name])
+            if (entity.id === id) return entity;
+    return null;
 }
 
 EntityRepository.prototype.getByGroup = function(name) {
     if (name in this._componentsNamesByGroup)
         return this._entitiesByGroup[name];
+    return [];
 }
 
 EntityRepository.prototype.registerGroup = function(name, componentsNames) {
@@ -43,9 +50,9 @@ EntityRepository.prototype.unregisterGroup = function(name) {
 }
 
 EntityRepository.prototype._entityMatchesGroup = function(entity, groupName) {
-    var hits = 0;
-    for (component of entity.components.all())
-        if (component.name in this._componentsNamesByGroup)
+    let hits = 0;
+    for (let component of entity.components.all())
+        if (this._componentsNamesByGroup[groupName].indexOf(component.name) >= 0)
             hits++;
     return hits == this._componentsNamesByGroup[groupName].length
 }

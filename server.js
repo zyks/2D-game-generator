@@ -2,6 +2,8 @@ var http = require('http');
 var express = require('express');
 var ejs = require('ejs');
 var socket = require('socket.io')
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var Engine = require('./engine/engine');
 var EntityCreator = require('./engine/entityCreator');
 
@@ -31,6 +33,8 @@ Server.prototype._setServerOptions = function() {
     this._app.engine('html', ejs.renderFile);
     this._app.set('views', './views');
     this._app.use(express.static('./'));
+    this._app.use(cookieParser("trololololololo"));
+    this._app.use(bodyParser.urlencoded({ extended: true }));
     this._io.on('connection', this._handleSocketConnection.bind(this));
 }
 

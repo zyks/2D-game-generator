@@ -43,7 +43,6 @@ Server.prototype._addSystems = function() {
 }
 
 Server.prototype._setRouting = function() {
-    this._app.use(express.static(__dirname + '/assets'));
     this._app.get('/', (req, res) => {
         res.render('home', { message: "Hello world!" });
     });

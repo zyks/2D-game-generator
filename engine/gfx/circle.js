@@ -1,17 +1,19 @@
-var Gfx = Gfx || {};
+PathBasedPrimitive = require('./pathBasedPrimitive');
 
-Gfx.Circle = function(x, y, radius) {
-    Gfx.PathBasedPrimitive.call(this, x, y);
+Circle = function(x, y, radius) {
+    PathBasedPrimitive.call(this, x, y);
     this.radius = radius;
 
     return this;
 };
 
-Gfx.Circle.prototype = Object.create(Gfx.PathBasedPrimitive.prototype);
-Gfx.Circle.constructor = Gfx.Circle;
+Circle.prototype = Object.create(PathBasedPrimitive.prototype);
+Circle.constructor = Circle;
 
-Gfx.Circle.prototype.makePath = function(ctx, x, y) {
+Circle.prototype.makePath = function(ctx, x, y) {
     ctx.beginPath();
     ctx.arc(this.x + x, this.y + y, this.radius, 0, Math.PI*2, true);
     ctx.closePath();
 }
+
+module.exports = Circle;

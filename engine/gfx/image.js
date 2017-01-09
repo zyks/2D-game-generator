@@ -1,14 +1,16 @@
-var Gfx = Gfx || {};
+Primitive = require('./primitive');
 
-Gfx.Image = function(x, y, image) {
-    Gfx.Primitive.call(this, x, y);
+ImagePrimitive = function(x, y, image) {
+    Primitive.call(this, x, y);
     this.image = image;
     return this;
 };
 
-Gfx.Image.prototype = Object.create(Gfx.Primitive.prototype);
-Gfx.Image.constructor = Gfx.Image;
+ImagePrimitive.prototype = Object.create(Primitive.prototype);
+ImagePrimitive.constructor = Image;
 
-Gfx.Image.prototype.render = function(ctx, x, y) {
+ImagePrimitive.prototype.render = function(ctx, x, y) {
     ctx.drawImage(this.image, this.x + x, this.y + y);
 }
+
+module.exports = ImagePrimitive;

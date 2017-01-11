@@ -67,14 +67,17 @@ Server.prototype._handleSocketConnection = function(socket) {
 }
 
 Server.prototype._registerNewPlayer = function(socket) {
-    var nickname = this._getUserNicknameFromSocketCookies(socket);
-    if (!nickname) socket.disconnect();
-
-    console.log(`=> New player ${nickname} connected`);
-    var player = this._entityCreator.createPlayer(nickname, socket);
-    socket.playerId = player.id;
-    socket.playerNickname = nickname;
-    this._engine.entities.add(player);
+    try {
+        var nickname = this._getUserNicknameFromSocketCookies(socket);
+        console.log(`=> New player ${nickname} connected`);
+        var player = this._entityCreator.createPlayer(nickname, socket);
+        socket.playerId = player.id;
+        socket.playerNickname = nickname;
+        this._engine.entities.add(player);
+    } catch(err) {
+        console.log(err);
+        socket.disconnect();
+    }
 }
 
 Server.prototype._unregisterPlayer = function(socket) {
@@ -86,16 +89,14 @@ Server.prototype._unregisterPlayer = function(socket) {
 Server.prototype._getUserNicknameFromSocketCookies = function(socket) {
     var signedNickname = decodeURIComponent(
         socket.handshake.headers.cookie
-        .split(";")
+        .split(';')
         .find((c) => c.indexOf('nickname') >= 0)
         .split('=')
         .pop()
     );
     var nickname = cookieParser.signedCookie(signedNickname, this._cookiesSecret);
-    if (!nickname || nickname === signedNickname) {
-        socket.disconnect();
-        return false;
-    }
+    if (!nickname || nickname === signedNickname)
+        throw "Invalid signed cookie value";
     return nickname;
 }
 

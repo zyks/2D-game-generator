@@ -1,8 +1,9 @@
+var io = require('socket.io-client');
 var Circle = require('./engine/gfx/circle');
 var Rect = require('./engine/gfx/rect');
 var ImagePrimitive = require('./engine/gfx/image');
 var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
-var io = require('socket.io-client');
+
 
 var Client = function() {
     this._socket = io()

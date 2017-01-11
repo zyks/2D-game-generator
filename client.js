@@ -1,10 +1,11 @@
-Circle = require('./engine/gfx/circle');
-Rect = require('./engine/gfx/rect');
-ImagePrimitive = require('./engine/gfx/image');
-PrimitivesGroup = require('./engine/gfx/primitivesGroup');
+var Circle = require('./engine/gfx/circle');
+var Rect = require('./engine/gfx/rect');
+var ImagePrimitive = require('./engine/gfx/image');
+var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
+var io = require('socket.io-client');
 
 var Client = function() {
-    // this._socket = io()
+    this._socket = io()
     this._canvas = document.getElementById("gameCanvas");
     this._ctx = this._canvas.getContext("2d");
 }

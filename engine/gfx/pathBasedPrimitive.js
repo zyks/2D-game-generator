@@ -1,25 +1,25 @@
-var Gfx = Gfx || {};
+PathBasedPrimitive = require('./primitive');
 
-Gfx.PathBasedPrimitive = function(x, y) {
-    Gfx.Primitive.call(this, x, y);
+PathBasedPrimitive = function(x, y) {
+    Primitive.call(this, x, y);
     return this;
 };
 
-Gfx.PathBasedPrimitive.prototype = Object.create(Gfx.Primitive.prototype);
-Gfx.PathBasedPrimitive.constructor = Gfx.PathBasedPrimitive;
+PathBasedPrimitive.prototype = Object.create(Primitive.prototype);
+PathBasedPrimitive.constructor = PathBasedPrimitive;
 
-Gfx.PathBasedPrimitive.prototype.stroke = function(strokeStyle, strokeWidth) {
+PathBasedPrimitive.prototype.stroke = function(strokeStyle, strokeWidth) {
   this.strokeStyle = strokeStyle;
   this.strokeWidth = strokeWidth || 1;
   return this;
 }
 
-Gfx.PathBasedPrimitive.prototype.fill = function(fillStyle) {
+PathBasedPrimitive.prototype.fill = function(fillStyle) {
   this.fillStyle = fillStyle;
   return this;
 }
 
-Gfx.PathBasedPrimitive.prototype.render = function(ctx, x, y) {
+PathBasedPrimitive.prototype.render = function(ctx, x, y) {
     this.makePath(ctx, x, y);
     if(this.fillStyle) {
         ctx.fillStyle = this.fillStyle;
@@ -32,6 +32,8 @@ Gfx.PathBasedPrimitive.prototype.render = function(ctx, x, y) {
     }
 }
 
-Gfx.PathBasedPrimitive.prototype.makePath = function(ctx, x, y) {
-    throw new Error("Gfx.PathBasedPrimitive.render : Can't call pure virtual method");
+PathBasedPrimitive.prototype.makePath = function(ctx, x, y) {
+    throw new Error("PathBasedPrimitive.render : Can't call pure virtual method");
 }
+
+module.exports = PathBasedPrimitive;

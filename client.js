@@ -1,4 +1,8 @@
-
+var Circle = require('./engine/gfx/circle');
+var Rect = require('./engine/gfx/rect');
+var ImagePrimitive = require('./engine/gfx/image');
+var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
+var io = require('socket.io-client');
 
 var Client = function() {
     this._socket = io()
@@ -10,22 +14,22 @@ Client.prototype.renderTest = function() {
     this._bg = new Image()
     this._bg.onload = () => {
       this._ready = true;
-      let bg = new Gfx.Image(0, 0, this._bg);
+      let bg = new ImagePrimitive(0, 0, this._bg);
       bg.render(this._ctx, 120, 30);
     }
     this._bg.src = "/assets/atlas.png";
     let eye = [
-      new Gfx.Circle(0, 0, 10).fill("white").stroke("black"),
-      new Gfx.Circle(0, 0, 3).fill("blue"),
+      new Circle(0, 0, 10).fill("white").stroke("black"),
+      new Circle(0, 0, 3).fill("blue"),
     ]
-    let eyes = new Gfx.PrimitivesGroup(0, -10, [
-      new Gfx.PrimitivesGroup(-15, 0, eye),
-      new Gfx.PrimitivesGroup(15, 0, eye)
+    let eyes = new PrimitivesGroup(0, -10, [
+      new PrimitivesGroup(-15, 0, eye),
+      new PrimitivesGroup(15, 0, eye)
     ]);
-    let head = new Gfx.PrimitivesGroup(0, 0, [
-      new Gfx.Rect(-30, -30, 60, 60).fill("yellow").stroke("grey", 3),
+    let head = new PrimitivesGroup(0, 0, [
+      new Rect(-30, -30, 60, 60).fill("yellow").stroke("grey", 3),
       eyes,
-      new Gfx.Rect(-10, 10, 20, 8).fill("red")
+      new Rect(-10, 10, 20, 8).fill("red")
     ]);
     head.render(this._ctx, 60, 60);
 }

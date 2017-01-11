@@ -1,17 +1,19 @@
-var Gfx = Gfx || {};
+PathBasedPrimitive = require('./pathBasedPrimitive');
 
-Gfx.Rect = function(x, y, width, height) {
-    Gfx.PathBasedPrimitive.call(this, x, y);
+Rect = function(x, y, width, height) {
+    PathBasedPrimitive.call(this, x, y);
     this.width = width;
     this.height = height;
     return this;
 };
 
-Gfx.Rect.prototype = Object.create(Gfx.PathBasedPrimitive.prototype);
-Gfx.Rect.constructor = Gfx.Rect;
+Rect.prototype = Object.create(PathBasedPrimitive.prototype);
+Rect.constructor = Rect;
 
-Gfx.Rect.prototype.makePath = function(ctx, x, y) {
+Rect.prototype.makePath = function(ctx, x, y) {
     ctx.beginPath();
     ctx.rect(this.x + x, this.y + y, this.width, this.height);
     ctx.closePath();
 }
+
+module.exports = Rect;

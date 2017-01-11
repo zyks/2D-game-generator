@@ -7,5 +7,10 @@ jsconfig.json
 node_modules/
 
 
+# webpack
+bundle.js
+bundle.js.map
+
+
 * Mac / OS X
 .DS_Store

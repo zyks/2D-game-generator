@@ -19,9 +19,9 @@ var Server = function() {
 
 Server.prototype.configure = function() {
     this._setServerOptions();
+    this._setRouting();
     this._registerComponentsGroups();
     this._addSystems();
-    this._setRouting();
 }
 
 Server.prototype.run = function(port) {
@@ -39,14 +39,6 @@ Server.prototype._setServerOptions = function() {
     this._io.on('connection', this._handleSocketConnection.bind(this));
 }
 
-Server.prototype._registerComponentsGroups = function() {
-    this._engine.entities.registerGroup('players', ['PlayerInfo']);
-}
-
-Server.prototype._addSystems = function() {
-
-}
-
 Server.prototype._setRouting = function() {
     this._app.get('/', (req, res) => {
         let nickname = '';
@@ -61,9 +53,20 @@ Server.prototype._setRouting = function() {
     });
 }
 
+Server.prototype._registerComponentsGroups = function() {
+    this._engine.entities.registerGroup('players', ['PlayerInfo']);
+}
+
+Server.prototype._addSystems = function() {
+
+}
+
 Server.prototype._handleSocketConnection = function(socket) {
     this._registerNewPlayer(socket);
     socket.on('disconnect', this._unregisterPlayer.bind(this, socket));
+    socket.on('keyPressed', (data) => { 
+        console.log(`Player ${socket.playerNickname} has pressed key: ${data.key}`); 
+    });
 }
 
 Server.prototype._registerNewPlayer = function(socket) {
@@ -71,6 +74,7 @@ Server.prototype._registerNewPlayer = function(socket) {
         var nickname = this._getUserNicknameFromSocketCookies(socket);
         console.log(`=> New player ${nickname} connected`);
         var player = this._entityCreator.createPlayer(nickname, socket);
+        socket.emit('registered', { nickname: nickname });
         socket.playerId = player.id;
         socket.playerNickname = nickname;
         this._engine.entities.add(player);

@@ -38,13 +38,33 @@ Client.prototype.renderTest = function() {
 }
 
 Client.prototype.configure = function() {
+    this._mapBrowserEvents();
+    this._handleSocketEvents();
     this._registerComponentsGroups();
     this._addSystems();
-    this._handleSocketEvents();
 }
 
 Client.prototype.run = function() {
     this.renderTest();
+}
+
+Client.prototype._mapBrowserEvents = function() {
+    document.onkeydown = (function(event) {
+        if (event.keyCode == 87)
+            this._socket.emit('keyPressed', { key: 'W' });
+        else if (event.keyCode == 83)
+            this._socket.emit('keyPressed', { key: 'S' });
+        else if (event.keyCode == 65)
+            this._socket.emit('keyPressed', { key: 'A' });
+        else if (event.keyCode == 68)
+            this._socket.emit('keyPressed', { key: 'D' });
+    }).bind(this);
+}
+
+Client.prototype._handleSocketEvents = function() {
+    this._socket.on('registered', function(data) {
+        console.log(`I have been registered with name ${data.nickname}`);
+    });
 }
 
 Client.prototype._registerComponentsGroups = function() {
@@ -55,15 +75,9 @@ Client.prototype._addSystems = function() {
 
 }
 
-Client.prototype._handleSocketEvents = function() {
-    this._socket.on('registered', function(playerData) {
-        console.log("I have been registered");
-    });
-}
-
 
 window.onload = () => {
-    var client = new Client()
+    var client = new Client();
     client.configure();
     client.run();
 }

@@ -65,6 +65,10 @@ Client.prototype._handleSocketEvents = function() {
     this._socket.on('registered', function(data) {
         console.log(`I have been registered with name ${data.nickname}`);
     });
+    this._socket.on('gameState', function(gameStateString) {
+        let gameState = JSON.parse(gameStateString);
+        console.log(`Game state received. Players number: ${gameState.players.length}`)
+    })
 }
 
 Client.prototype._registerComponentsGroups = function() {

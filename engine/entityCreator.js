@@ -15,7 +15,7 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
 
 EntityCreator.prototype.createMap = function() {
   var tileMapGenerator = new TileMapGenerator();
-  var tileMap = new TileMap(tileMapGenerator.generate(50, 50));
+  var tileMap = new TileMap(tileMapGenerator.generate(50, 50), 50, 50);
   var map = new Entity([tileMap], 'map');
   return map;
 };

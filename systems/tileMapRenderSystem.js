@@ -17,8 +17,7 @@ TileMapRenderSystem.prototype.update = function(deltaTime) {
     camera = this._engine.entities.getByName("camera");
     for(let layerEntity of mapLayers) {
         layer = layerEntity.components.get("TileMap");
-        tiles = layer.tiles;
-        this._renderTiles(tiles, camera);
+        this._renderTiles(layer, camera);
     }
 }
 
@@ -26,28 +25,30 @@ TileMapRenderSystem.prototype.end = function() {
 
 }
 
-TileMapRenderSystem.prototype._getViewportContext = function(camera) {
-    var ViewportContext = function(camera, TILE_SIZE, GAME_WIDTH, GAME_HEIGHT) {
+TileMapRenderSystem.prototype._getViewportContext = function(camera, layer) {
+    var ViewportContext = function(camera, map, TILE_SIZE, GAME_WIDTH, GAME_HEIGHT) {
         cameraPosition = camera.components.get("Position");
         this.viewportXStart = cameraPosition.x - Math.floor(GAME_WIDTH / 2);
-        this.viewportXStart = this.viewportXStart > 0 ? this.viewportXStart : 0;
+        this.viewportXStart = Math.max(0, this.viewportXStart);
+        this.viewportXStart = Math.min(layer.width * TILE_SIZE - GAME_WIDTH, this.viewportXStart);
         this.viewportYStart = cameraPosition.y - Math.floor(GAME_HEIGHT / 2);
-        this.viewportYStart = this.viewportYStart > 0 ? this.viewportYStart : 0;
+        this.viewportYStart = Math.max(0, this.viewportYStart);
+        this.viewportYStart = Math.min(layer.height * TILE_SIZE - GAME_HEIGHT, this.viewportYStart);
         this.startXTile = Math.floor(this.viewportXStart / TILE_SIZE);
         this.startYTile = Math.floor(this.viewportYStart / TILE_SIZE);
         this.viewportXOffset = this.startXTile * TILE_SIZE - this.viewportXStart;
         this.viewportYOffset = this.startYTile * TILE_SIZE - this.viewportYStart;
     }
-    return new ViewportContext(camera, this.TILE_SIZE, this.GAME_WIDTH, this.GAME_HEIGHT);
+    return new ViewportContext(camera, layer, this.TILE_SIZE, this.GAME_WIDTH, this.GAME_HEIGHT);
 };
 
-TileMapRenderSystem.prototype._renderTiles = function(tiles, camera) {
-    viewport = this._getViewportContext(camera);
+TileMapRenderSystem.prototype._renderTiles = function(layer, camera) {
+    viewport = this._getViewportContext(camera, layer);
     var y = viewport.viewportYOffset;
     for(let row = 0 ; row < 15 ; row++) {
         var x = viewport.viewportXOffset;
         for(let column = 0 ; column < 19 ; column++) {
-            tile = tiles[column + viewport.startXTile][row + viewport.startYTile];
+            tile = layer.tiles[column + viewport.startXTile][row + viewport.startYTile];
             this._renderTile(tile, x, y);
             x += this.TILE_SIZE;
         }

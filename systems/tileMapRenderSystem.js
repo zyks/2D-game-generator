@@ -37,6 +37,8 @@ TileMapRenderSystem.prototype._getViewportContext = function(camera, layer) {
         this.startYTile = Math.floor(this.viewportYStart / Config.TILE_SIZE);
         this.viewportXOffset = this.startXTile * Config.TILE_SIZE - this.viewportXStart;
         this.viewportYOffset = this.startYTile * Config.TILE_SIZE - this.viewportYStart;
+        this.nbOfRows = Math.ceil(Config.GAME_HEIGHT / Config.TILE_SIZE) + 1;
+        this.nbOfColumns = Math.ceil(Config.GAME_WIDTH / Config.TILE_SIZE) + 1;
     }
     return new ViewportContext(camera, layer);
 };
@@ -44,9 +46,9 @@ TileMapRenderSystem.prototype._getViewportContext = function(camera, layer) {
 TileMapRenderSystem.prototype._renderTiles = function(layer, camera) {
     viewport = this._getViewportContext(camera, layer);
     var y = viewport.viewportYOffset;
-    for(let row = 0 ; row < 15 ; row++) {
+    for(let row = 0 ; row < viewport.nbOfRows ; row++) {
         var x = viewport.viewportXOffset;
-        for(let column = 0 ; column < 19 ; column++) {
+        for(let column = 0 ; column < viewport.nbOfColumns ; column++) {
             tile = layer.tiles[column + viewport.startXTile][row + viewport.startYTile];
             this._renderTile(tile, x, y);
             x += Config.TILE_SIZE;

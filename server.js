@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var Engine = require('./engine/engine');
 var EntityCreator = require('./engine/entityCreator');
+var SendGameStateSystem = require('./systems/SendGameStateSystem');
+var FrameProvider = require('./engine/FrameProvider');
 
 
 var Server = function() {
@@ -15,6 +17,7 @@ var Server = function() {
     this._engine = new Engine();
     this._entityCreator = new EntityCreator();
     this._cookiesSecret = "cha8423jfsd923kf5";
+    this._frameProvider = new FrameProvider();
 }
 
 Server.prototype.configure = function() {
@@ -27,6 +30,9 @@ Server.prototype.configure = function() {
 Server.prototype.run = function(port) {
     this._server.listen(port);
     console.log("=> Server started");
+    this._engine.entities.add(this._entityCreator.createMap());
+    this._frameProvider.addAction(this._engine.update.bind(this._engine));
+    this._frameProvider.start(0.25);
 }
 
 Server.prototype._setServerOptions = function() {
@@ -55,17 +61,18 @@ Server.prototype._setRouting = function() {
 
 Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
+    this._engine.entities.registerGroup('mapLayers', ['TileMap']);
 }
 
 Server.prototype._addSystems = function() {
-
+    this._engine.addSystem(new SendGameStateSystem(this._engine), 0);
 }
 
 Server.prototype._handleSocketConnection = function(socket) {
     this._registerNewPlayer(socket);
     socket.on('disconnect', this._unregisterPlayer.bind(this, socket));
-    socket.on('keyPressed', (data) => { 
-        console.log(`Player ${socket.playerNickname} has pressed key: ${data.key}`); 
+    socket.on('keyPressed', (data) => {
+        console.log(`Player ${socket.playerNickname} has pressed key: ${data.key}`);
     });
 }
 

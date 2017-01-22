@@ -19,7 +19,7 @@ EntityRepository.prototype.remove = function(entity) {
 
 EntityRepository.prototype.clear = function() {
     for (let name in this._entitiesByGroup)
-        delete this._entitiesByGroup[name];
+        this._entitiesByGroup[name] = [];
 }
 
 EntityRepository.prototype.getById = function(id) {

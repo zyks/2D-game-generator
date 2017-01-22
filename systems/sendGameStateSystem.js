@@ -30,7 +30,8 @@ SendGameStateSystem.prototype.end = function() {
 
 SendGameStateSystem.prototype._getGameState = function() {
     let gameState = {
-        players: this._engine.entities.getByGroup('players')
+        players: this._engine.entities.getByGroup('players'),
+        mapLayers: this._engine.entities.getByGroup('mapLayers')
     }
     return gameState;
 }

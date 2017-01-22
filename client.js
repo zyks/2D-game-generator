@@ -4,7 +4,9 @@ var Circle = require('./engine/gfx/circle');
 var Rect = require('./engine/gfx/rect');
 var ImagePrimitive = require('./engine/gfx/image');
 var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
-
+var SpritesRepository = require('./engine/SpritesRepository');
+var Entity = require('./engine/Entity');
+var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 
 var Client = function() {
     this._socket = io();
@@ -13,39 +15,23 @@ var Client = function() {
     this._ctx = this._canvas.getContext("2d");
 }
 
-Client.prototype.renderTest = function() {
-    this._bg = new Image()
-    this._bg.onload = () => {
-        this._ready = true;
-        let bg = new ImagePrimitive(0, 0, this._bg);
-        bg.render(this._ctx, 120, 30);
-    }
-    this._bg.src = "/assets/atlas.png";
-    let eye = [
-        new Circle(0, 0, 10).fill("white").stroke("black"),
-        new Circle(0, 0, 3).fill("blue"),
-    ]
-    let eyes = new PrimitivesGroup(0, -10, [
-        new PrimitivesGroup(-15, 0, eye),
-        new PrimitivesGroup(15, 0, eye)
-    ]);
-    let head = new PrimitivesGroup(0, 0, [
-        new Rect(-30, -30, 60, 60).fill("yellow").stroke("grey", 3),
-        eyes,
-        new Rect(-10, 10, 20, 8).fill("red")
-    ]);
-    head.render(this._ctx, 60, 60);
+Client.prototype._initSprites = function() {
+    this._sprites = new SpritesRepository();
+    this._sprites.add("atlas", "/assets/atlas.png");
+    this._sprites.onCompleted((() => {
+        this._addSystems();
+        this._handleSocketEvents();
+    }).bind(this));
 }
 
 Client.prototype.configure = function() {
     this._mapBrowserEvents();
-    this._handleSocketEvents();
     this._registerComponentsGroups();
-    this._addSystems();
+    this._initSprites();
 }
 
 Client.prototype.run = function() {
-    this.renderTest();
+
 }
 
 Client.prototype._mapBrowserEvents = function() {
@@ -65,18 +51,29 @@ Client.prototype._handleSocketEvents = function() {
     this._socket.on('registered', function(data) {
         console.log(`I have been registered with name ${data.nickname}`);
     });
-    this._socket.on('gameState', function(gameStateString) {
+    this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
-        console.log(`Game state received. Players number: ${gameState.players.length}`)
-    })
+        this._engine.entities.clear();
+        // TODO: Send sanitized form of data because we need to get components
+        //       list (not dictionary). Now we get it thourgh private property.
+        //       It's ugly as hell.
+        for(let p of gameState.players)
+          this._engine.entities.add(new Entity([p.components._componentByName['PlayerInfo']]));
+        for(let l of gameState.mapLayers)
+          this._engine.entities.add(new Entity([l.components._componentByName['TileMap']]));
+        this._engine.update(0);
+    }).bind(this));
 }
 
 Client.prototype._registerComponentsGroups = function() {
-
+    this._engine.entities.registerGroup('players', ['PlayerInfo']);
+    this._engine.entities.registerGroup('mapLayers', ['TileMap']);
 }
 
 Client.prototype._addSystems = function() {
-
+    this._engine.addSystem(
+      new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
+    , 0);
 }
 
 

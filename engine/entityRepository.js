@@ -1,12 +1,15 @@
 var EntityRepository = function() {
     this._componentsNamesByGroup = {};
     this._entitiesByGroup = {};
+    this._entitiesByName = {};
 }
 
 EntityRepository.prototype.add = function(entity) {
     for (let name in this._componentsNamesByGroup)
         if (this._entityMatchesGroup(entity, name))
             this._entitiesByGroup[name].push(entity);
+    if(entity.name != '')
+        this._entitiesByName[entity.name] = entity;
 }
 
 EntityRepository.prototype.remove = function(entity) {
@@ -15,11 +18,14 @@ EntityRepository.prototype.remove = function(entity) {
         if (i >= 0)
             this._entitiesByGroup[name].splice(i, 1);
     }
+    if(entity.name in this._entitiesByName)
+        delete this._entitiesByName[entity.name];
 }
 
 EntityRepository.prototype.clear = function() {
     for (let name in this._entitiesByGroup)
         this._entitiesByGroup[name] = [];
+    this._entitiesByName = {};
 }
 
 EntityRepository.prototype.getById = function(id) {
@@ -28,6 +34,12 @@ EntityRepository.prototype.getById = function(id) {
             if (entity.id === id) return entity;
     return null;
 }
+
+EntityRepository.prototype.getByName = function(name) {
+    if(name in this._entitiesByName)
+        return this._entitiesByName[name];
+    return null;
+};
 
 EntityRepository.prototype.getByGroup = function(name) {
     if (name in this._componentsNamesByGroup)

@@ -7,6 +7,7 @@ var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
 var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
+var EntityCreator = require('./engine/EntityCreator');
 
 var Client = function() {
     this._socket = io();
@@ -28,6 +29,8 @@ Client.prototype.configure = function() {
     this._mapBrowserEvents();
     this._registerComponentsGroups();
     this._initSprites();
+    this._entityCreator = new EntityCreator();
+    this._engine.entities.add(this._entityCreator.createCamera(400, 400));
 }
 
 Client.prototype.run = function() {
@@ -36,14 +39,21 @@ Client.prototype.run = function() {
 
 Client.prototype._mapBrowserEvents = function() {
     document.onkeydown = (function(event) {
-        if (event.keyCode == 87)
+        camera = this._engine.entities.getByName("camera");
+        cameraPosition = camera.components.get("Position");
+        if (event.keyCode == 87) {
+            cameraPosition.y -= 4;
             this._socket.emit('keyPressed', { key: 'W' });
-        else if (event.keyCode == 83)
+        } else if (event.keyCode == 83) {
+            cameraPosition.y += 4;
             this._socket.emit('keyPressed', { key: 'S' });
-        else if (event.keyCode == 65)
+        } else if (event.keyCode == 65) {
+            cameraPosition.x -= 4;
             this._socket.emit('keyPressed', { key: 'A' });
-        else if (event.keyCode == 68)
+        } else if (event.keyCode == 68) {
+            cameraPosition.x += 4;
             this._socket.emit('keyPressed', { key: 'D' });
+        }
     }).bind(this);
 }
 
@@ -53,7 +63,9 @@ Client.prototype._handleSocketEvents = function() {
     });
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
+        camera = this._engine.entities.getByName("camera");
         this._engine.entities.clear();
+        this._engine.entities.add(camera);
         // TODO: Send sanitized form of data because we need to get components
         //       list (not dictionary). Now we get it thourgh private property.
         //       It's ugly as hell.

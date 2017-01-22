@@ -32,7 +32,7 @@ Server.prototype.run = function(port) {
     console.log("=> Server started");
     this._engine.entities.add(this._entityCreator.createMap());
     this._frameProvider.addAction(this._engine.update.bind(this._engine));
-    this._frameProvider.start(0.25);
+    this._frameProvider.start(10);
 }
 
 Server.prototype._setServerOptions = function() {

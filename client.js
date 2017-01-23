@@ -8,6 +8,8 @@ var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 var EntityCreator = require('./engine/EntityCreator');
+var PlayerInfo = require('./components/PlayerInfo');
+var TileMap = require('./components/TileMap');
 
 var Client = function() {
     this._socket = io();
@@ -70,12 +72,31 @@ Client.prototype._handleSocketEvents = function() {
         //       list (not dictionary). Now we get it thourgh private property.
         //       It's ugly as hell.
         for(let p of gameState.players)
-          this._engine.entities.add(new Entity([p.components._componentByName['PlayerInfo']]));
+          this._engine.entities.add(new Entity([this._recreateComponent(p.components._componentByName['PlayerInfo'])]));
         for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity([l.components._componentByName['TileMap']]));
+          this._engine.entities.add(new Entity([this._recreateComponent(l.components._componentByName['TileMap'])]));
         this._engine.update(0);
     }).bind(this));
 }
+
+Client.prototype._recreateComponent = function(componentBlueprint) {
+    var ComponentFactory = function() {
+        this._workers = {
+            "PlayerInfo": () => { return new PlayerInfo(); },
+            "TileMap": () => { return new TileMap(); }
+        }
+    }
+
+    ComponentFactory.prototype.create = function (name) {
+        return this._workers[name]();
+    };
+    let componentFactory = new ComponentFactory();
+    let component = componentFactory.create(componentBlueprint.name);
+    for (let property in componentBlueprint) {
+        component[property] = componentBlueprint[property];
+    }
+    return component;
+};
 
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);

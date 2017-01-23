@@ -68,13 +68,10 @@ Client.prototype._handleSocketEvents = function() {
         camera = this._engine.entities.getByName("camera");
         this._engine.entities.clear();
         this._engine.entities.add(camera);
-        // TODO: Send sanitized form of data because we need to get components
-        //       list (not dictionary). Now we get it thourgh private property.
-        //       It's ugly as hell.
         for(let p of gameState.players)
-          this._engine.entities.add(new Entity(this._recreateComponents(p)));
+          this._engine.entities.add(new Entity(this._recreateComponents(p.components, p.name)));
         for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity(this._recreateComponents(l)));
+          this._engine.entities.add(new Entity(this._recreateComponents(l.components, l.name)));
         this._engine.update(0);
     }).bind(this));
 }

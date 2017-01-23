@@ -30,10 +30,15 @@ SendGameStateSystem.prototype.end = function() {
 }
 
 SendGameStateSystem.prototype._getGameState = function() {
-    let toComponents = (entity) => { return entity.components.all(); }
+    let sanitizeEntity = (entity) => {
+      return {
+        name: entity.name,
+        components: entity.components.all()
+      }
+    }
     let gameState = {
-        players: this._engine.entities.getByGroup('players').map(toComponents),
-        mapLayers: this._engine.entities.getByGroup('mapLayers').map(toComponents)
+        players: this._engine.entities.getByGroup('players').map(sanitizeEntity),
+        mapLayers: this._engine.entities.getByGroup('mapLayers').map(sanitizeEntity)
     }
     return gameState;
 }

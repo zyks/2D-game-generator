@@ -32,6 +32,7 @@ SendGameStateSystem.prototype.end = function() {
 SendGameStateSystem.prototype._getGameState = function() {
     let sanitizeEntity = (entity) => {
       return {
+        id: entity.id,
         name: entity.name,
         components: entity.components.all()
       }

@@ -65,15 +65,20 @@ Client.prototype._handleSocketEvents = function() {
     });
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
-        camera = this._engine.entities.getByName("camera");
-        this._engine.entities.clear();
-        this._engine.entities.add(camera);
-        for(let p of gameState.players)
-          this._engine.entities.add(new Entity(this._recreateComponents(p.components), p.name));
-        for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity(this._recreateComponents(l.components), l.name));
+        this._recreateEntities(gameState.players);
+        this._recreateEntities(gameState.mapLayers);
         this._engine.update(0);
     }).bind(this));
+}
+
+Client.prototype._recreateEntities = function(entities) {
+    for(let e of entities) {
+        let localEntity = this._engine.entities.getById(e.id);
+        if(localEntity != null)
+            this._engine.entities.remove(localEntity);
+        let newEntity = new Entity(this._recreateComponents(e.components), e.name, e.id);
+        this._engine.entities.add(newEntity);
+    }
 }
 
 Client.prototype._recreateComponents = function(componentBlueprints) {

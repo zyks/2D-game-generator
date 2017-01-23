@@ -17,8 +17,9 @@ SendGameStateSystem.prototype.update = function(time) {
     this._elapsedTime -= this._sendingInterval;
     let gameState = this._getGameState();
     let gameStateString = this._serialize(gameState);
+    let players = this._engine.entities.getByGroup('players');
 
-    for (let player of gameState.players) {
+    for (let player of players) {
         let playerInfo = player.components.get('PlayerInfo');
         playerInfo.socket.emit('gameState', gameStateString);
     }
@@ -29,9 +30,10 @@ SendGameStateSystem.prototype.end = function() {
 }
 
 SendGameStateSystem.prototype._getGameState = function() {
+    let toComponents = (entity) => { return entity.components.all(); }
     let gameState = {
-        players: this._engine.entities.getByGroup('players'),
-        mapLayers: this._engine.entities.getByGroup('mapLayers')
+        players: this._engine.entities.getByGroup('players').map(toComponents),
+        mapLayers: this._engine.entities.getByGroup('mapLayers').map(toComponents)
     }
     return gameState;
 }

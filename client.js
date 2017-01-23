@@ -72,14 +72,14 @@ Client.prototype._handleSocketEvents = function() {
         //       list (not dictionary). Now we get it thourgh private property.
         //       It's ugly as hell.
         for(let p of gameState.players)
-          this._engine.entities.add(new Entity([this._recreateComponent(p.components._componentByName['PlayerInfo'])]));
+          this._engine.entities.add(new Entity(this._recreateComponents(p)));
         for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity([this._recreateComponent(l.components._componentByName['TileMap'])]));
+          this._engine.entities.add(new Entity(this._recreateComponents(l)));
         this._engine.update(0);
     }).bind(this));
 }
 
-Client.prototype._recreateComponent = function(componentBlueprint) {
+Client.prototype._recreateComponents = function(componentBlueprints) {
     var ComponentFactory = function() {
         this._workers = {
             "PlayerInfo": () => { return new PlayerInfo(); },
@@ -91,11 +91,14 @@ Client.prototype._recreateComponent = function(componentBlueprint) {
         return this._workers[name]();
     };
     let componentFactory = new ComponentFactory();
-    let component = componentFactory.create(componentBlueprint.name);
-    for (let property in componentBlueprint) {
-        component[property] = componentBlueprint[property];
+    let recreate = (componentBlueprint) => {
+      let component = componentFactory.create(componentBlueprint.name);
+      for (let property in componentBlueprint) {
+          component[property] = componentBlueprint[property];
+      }
+      return component;
     }
-    return component;
+    return componentBlueprints.map(recreate);
 };
 
 Client.prototype._registerComponentsGroups = function() {

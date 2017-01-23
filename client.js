@@ -69,9 +69,9 @@ Client.prototype._handleSocketEvents = function() {
         this._engine.entities.clear();
         this._engine.entities.add(camera);
         for(let p of gameState.players)
-          this._engine.entities.add(new Entity(this._recreateComponents(p.components, p.name)));
+          this._engine.entities.add(new Entity(this._recreateComponents(p.components), p.name));
         for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity(this._recreateComponents(l.components, l.name)));
+          this._engine.entities.add(new Entity(this._recreateComponents(l.components), l.name));
         this._engine.update(0);
     }).bind(this));
 }

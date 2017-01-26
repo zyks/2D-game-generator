@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var Engine = require('./engine/engine');
 var EntityCreator = require('./creators/entityCreator');
 var SendGameStateSystem = require('./systems/SendGameStateSystem');
+var PlayerMotionSystem = require('./systems/playerMotionSystem');
+var MovementSystem = require('./systems/movementSystem');
 var FrameProvider = require('./engine/FrameProvider');
 
 
@@ -61,18 +63,27 @@ Server.prototype._setRouting = function() {
 
 Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
+    this._engine.entities.registerGroup('movement', ['Motion', 'Position']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
 }
 
 Server.prototype._addSystems = function() {
-    this._engine.addSystem(new SendGameStateSystem(this._engine), 0);
+    this._engine.addSystem(new PlayerMotionSystem(this._engine), 0);
+    this._engine.addSystem(new MovementSystem(this._engine), 1);
+    this._engine.addSystem(new SendGameStateSystem(this._engine), 2);
 }
 
 Server.prototype._handleSocketConnection = function(socket) {
     this._registerNewPlayer(socket);
     socket.on('disconnect', this._unregisterPlayer.bind(this, socket));
-    socket.on('keyPressed', (data) => {
+    socket.on('keyDown', (data) => {
         console.log(`Player ${socket.playerNickname} has pressed key: ${data.key}`);
+        player = this._engine.entities.getById(socket.playerId);
+        player.components.get("PlayerInfo").pressed[data.key] = true;
+    });
+    socket.on('keyUp', (data) => {
+        player = this._engine.entities.getById(socket.playerId);
+        player.components.get("PlayerInfo").pressed[data.key] = false;
     });
 }
 

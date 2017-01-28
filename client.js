@@ -10,10 +10,6 @@ var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
 var PrimitiveCreator = require('./primitiveCreator');
 var EntityCreator = require('./engine/EntityCreator');
-var PlayerInfo = require('./components/PlayerInfo');
-var TileMap = require('./components/TileMap');
-var Graphics = require('./components/Graphics');
-var Position = require('./components/Position');
 
 var Client = function() {
     this._socket = io();
@@ -78,37 +74,14 @@ Client.prototype._handleSocketEvents = function() {
 
 Client.prototype._recreateEntities = function(entities) {
     for(let e of entities) {
+        // TODO: We should remove also entities which were removed on server
+        //       but are still on client side
         let localEntity = this._engine.entities.getById(e.id);
         if(localEntity != null)
             this._engine.entities.remove(localEntity);
-        let newEntity = new Entity(this._recreateComponents(e.components), e.name, e.id);
-        this._engine.entities.add(newEntity);
+        this._engine.entities.add(this._entityCreator.recreate(e));
     }
 }
-
-Client.prototype._recreateComponents = function(componentBlueprints) {
-    var ComponentFactory = function() {
-        this._workers = {
-            "PlayerInfo": () => { return new PlayerInfo(); },
-            "TileMap": () => { return new TileMap(); },
-            "Graphics": () => { return new Graphics(); },
-            "Position": () => { return new Position(); }
-        }
-    }
-
-    ComponentFactory.prototype.create = function (name) {
-        return this._workers[name]();
-    };
-    let componentFactory = new ComponentFactory();
-    let recreate = (componentBlueprint) => {
-      let component = componentFactory.create(componentBlueprint.name);
-      for (let property in componentBlueprint) {
-          component[property] = componentBlueprint[property];
-      }
-      return component;
-    }
-    return componentBlueprints.map(recreate);
-};
 
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);

@@ -12,6 +12,7 @@ GraphicEntityRenderSystem.prototype.start = function() {
 }
 
 GraphicEntityRenderSystem.prototype.update = function(deltaTime) {
+    // TODO: We should not render entities which are whole outside viewport
     let entities = this._engine.entities.getByGroup("graphicsEntities");
     let camera = this._engine.entities.getByName("camera").components.get("Position");
     let yOffset = camera.y - Config.GAME_HEIGHT/2;

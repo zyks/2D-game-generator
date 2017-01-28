@@ -5,7 +5,9 @@ var Position = require('../components/position');
 var Graphics = require('../components/graphics');
 var TileMapGenerator = require('../TileMapGenerator');
 
-var EntityCreator = function() {}
+var EntityCreator = function() {
+    this._componentFactory = this._createComponentFactory();
+}
 
 EntityCreator.prototype.createPlayer = function(name, socket) {
     let playerInfoComponent = new PlayerInfo(name, socket);
@@ -32,5 +34,37 @@ EntityCreator.prototype.createCamera = function(x, y) {
     var camera = new Entity([position], "camera");
     return camera;
 };
+
+EntityCreator.prototype.recreate = function(entity) {
+    return new Entity(this._recreateComponents(entity.components), entity.name, entity.id);
+}
+
+EntityCreator.prototype._recreateComponents = function(componentBlueprints) {
+    let recreate = (componentBlueprint) => {
+      let component = this._componentFactory.create(componentBlueprint.name);
+      for (let property in componentBlueprint) {
+          component[property] = componentBlueprint[property];
+      }
+      return component;
+    }
+    return componentBlueprints.map(recreate);
+};
+
+EntityCreator.prototype._createComponentFactory = function() {
+    let ComponentFactory = function() {
+        this._workers = {
+            "PlayerInfo": () => { return new PlayerInfo(); },
+            "TileMap": () => { return new TileMap(); },
+            "Graphics": () => { return new Graphics(); },
+            "Position": () => { return new Position(); }
+        }
+    }
+
+    ComponentFactory.prototype.create = function (name) {
+        return this._workers[name]();
+    };
+
+    return new ComponentFactory();
+}
 
 module.exports = EntityCreator;

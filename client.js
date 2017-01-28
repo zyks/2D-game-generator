@@ -7,15 +7,20 @@ var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
 var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
+var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
+var PrimitiveCreator = require('./primitiveCreator');
 var EntityCreator = require('./engine/EntityCreator');
 var PlayerInfo = require('./components/PlayerInfo');
 var TileMap = require('./components/TileMap');
+var Graphics = require('./components/Graphics');
+var Position = require('./components/Position');
 
 var Client = function() {
     this._socket = io();
     this._engine = new Engine();
     this._canvas = document.getElementById("gameCanvas");
     this._ctx = this._canvas.getContext("2d");
+    this._primitiveCreator = new PrimitiveCreator();
 }
 
 Client.prototype._initSprites = function() {
@@ -85,7 +90,9 @@ Client.prototype._recreateComponents = function(componentBlueprints) {
     var ComponentFactory = function() {
         this._workers = {
             "PlayerInfo": () => { return new PlayerInfo(); },
-            "TileMap": () => { return new TileMap(); }
+            "TileMap": () => { return new TileMap(); },
+            "Graphics": () => { return new Graphics(); },
+            "Position": () => { return new Position(); }
         }
     }
 
@@ -106,12 +113,16 @@ Client.prototype._recreateComponents = function(componentBlueprints) {
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
+    this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position'])
 }
 
 Client.prototype._addSystems = function() {
     this._engine.addSystem(
       new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
     , 0);
+    this._engine.addSystem(
+      new GraphicEntityRenderSystem(this._engine, this._ctx, this._primitiveCreator)
+    , 1);
 }
 
 

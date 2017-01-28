@@ -8,8 +8,8 @@ var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
-var PrimitiveCreator = require('./primitiveCreator');
-var EntityCreator = require('./engine/EntityCreator');
+var PrimitiveCreator = require('./creators/primitiveCreator');
+var EntityCreator = require('./creators/EntityCreator');
 
 var Client = function() {
     this._socket = io();

@@ -5,7 +5,7 @@ var socket = require('socket.io')
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var Engine = require('./engine/engine');
-var EntityCreator = require('./engine/entityCreator');
+var EntityCreator = require('./creators/entityCreator');
 var SendGameStateSystem = require('./systems/SendGameStateSystem');
 var FrameProvider = require('./engine/FrameProvider');
 

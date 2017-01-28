@@ -1,4 +1,4 @@
-var Entity = require('./entity');
+var Entity = require('./../engine/entity');
 var PlayerInfo = require('../components/playerInfo');
 var TileMap = require('../components/tileMap');
 var Position = require('../components/position');

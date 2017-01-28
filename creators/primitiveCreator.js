@@ -1,6 +1,6 @@
-var Circle = require('./engine/gfx/circle');
-var Rect = require('./engine/gfx/rect');
-var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
+var Circle = require('./../engine/gfx/circle');
+var Rect = require('./../engine/gfx/rect');
+var PrimitivesGroup = require('./../engine/gfx/primitivesGroup');
 
 var PrimitiveCreator = function(spritesRepository) {
     this._spritesRepository = spritesRepository;

@@ -7,13 +7,16 @@ var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
 var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
-var EntityCreator = require('./engine/EntityCreator');
+var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
+var PrimitiveCreator = require('./creators/primitiveCreator');
+var EntityCreator = require('./creators/EntityCreator');
 
 var Client = function() {
     this._socket = io();
     this._engine = new Engine();
     this._canvas = document.getElementById("gameCanvas");
     this._ctx = this._canvas.getContext("2d");
+    this._primitiveCreator = new PrimitiveCreator();
 }
 
 Client.prototype._initSprites = function() {
@@ -63,29 +66,36 @@ Client.prototype._handleSocketEvents = function() {
     });
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
-        camera = this._engine.entities.getByName("camera");
-        this._engine.entities.clear();
-        this._engine.entities.add(camera);
-        // TODO: Send sanitized form of data because we need to get components
-        //       list (not dictionary). Now we get it thourgh private property.
-        //       It's ugly as hell.
-        for(let p of gameState.players)
-          this._engine.entities.add(new Entity([p.components._componentByName['PlayerInfo']]));
-        for(let l of gameState.mapLayers)
-          this._engine.entities.add(new Entity([l.components._componentByName['TileMap']]));
+        this._recreateEntities(gameState.players);
+        this._recreateEntities(gameState.mapLayers);
         this._engine.update(0);
     }).bind(this));
+}
+
+Client.prototype._recreateEntities = function(entities) {
+    for(let e of entities) {
+        // TODO: We should remove also entities which were removed on server
+        //       but are still on client side
+        let localEntity = this._engine.entities.getById(e.id);
+        if(localEntity != null)
+            this._engine.entities.remove(localEntity);
+        this._engine.entities.add(this._entityCreator.recreate(e));
+    }
 }
 
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
+    this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position'])
 }
 
 Client.prototype._addSystems = function() {
     this._engine.addSystem(
       new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
     , 0);
+    this._engine.addSystem(
+      new GraphicEntityRenderSystem(this._engine, this._ctx, this._primitiveCreator)
+    , 1);
 }
 
 

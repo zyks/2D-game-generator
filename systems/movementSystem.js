@@ -11,8 +11,9 @@ MovementSystem.prototype.update = function(time) {
     for (let entity of entities) {
         let motion = entity.components.get('Motion');
         let position = entity.components.get('Position');
-        position.x += motion.x_velocity * (time / 1000);
-        position.y += motion.y_velocity * (time / 1000);
+        let deltaX = motion.xVelocity * (time / 1000);
+        let deltaY = motion.yVelocity * (time / 1000);
+        position.move(deltaX, deltaY);
         console.log(`Entity ${entity.id} position: ${position.x}, ${position.y}`);
     }
 }

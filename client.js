@@ -41,16 +41,12 @@ Client.prototype._mapBrowserEvents = function() {
         camera = this._engine.entities.getByName("camera");
         cameraPosition = camera.components.get("Position");
         if (event.keyCode == 87) {
-            cameraPosition.y -= 4;
             this._socket.emit('keyDown', { key: 'W' });
         } else if (event.keyCode == 83) {
-            cameraPosition.y += 4;
             this._socket.emit('keyDown', { key: 'S' });
         } else if (event.keyCode == 65) {
-            cameraPosition.x -= 4;
             this._socket.emit('keyDown', { key: 'A' });
         } else if (event.keyCode == 68) {
-            cameraPosition.x += 4;
             this._socket.emit('keyDown', { key: 'D' });
         }
     }).bind(this);
@@ -69,8 +65,9 @@ Client.prototype._mapBrowserEvents = function() {
 
 Client.prototype._handleSocketEvents = function() {
     this._socket.on('registered', function(data) {
+        this._playerId = data.playerId;
         console.log(`I have been registered with name ${data.nickname}`);
-    });
+    }.bind(this));
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
         this._recreateEntities(gameState.players);
@@ -88,6 +85,10 @@ Client.prototype._recreateEntities = function(entities) {
             this._engine.entities.remove(localEntity);
         this._engine.entities.add(this._entityCreator.recreate(e));
     }
+    // TODO: Remove it. It's only temporary camera centering
+    camera = this._engine.entities.getByName("camera");
+    playerPos = this._engine.entities.getById(this._playerId).components.get("Position");
+    camera.components.get("Position").set(playerPos.x, playerPos.y);
 }
 
 Client.prototype._registerComponentsGroups = function() {

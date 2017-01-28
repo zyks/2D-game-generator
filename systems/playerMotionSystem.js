@@ -20,9 +20,9 @@ PlayerMotionSystem.prototype.end = function() {
 }
 
 PlayerMotionSystem.prototype._updateMotion = function(pressed, motion) {
-    let max = motion.max_velocity;
-    motion.y_velocity = pressed.S * max || pressed.W * (-1) * max;
-    motion.x_velocity = pressed.D * max || pressed.A * (-1) * max;
+    let max = motion.maxVelocity;
+    motion.yVelocity = pressed.S * max || pressed.W * (-1) * max;
+    motion.xVelocity = pressed.D * max || pressed.A * (-1) * max;
 }
 
 

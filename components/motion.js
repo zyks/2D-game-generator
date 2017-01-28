@@ -1,12 +1,12 @@
-var Motion = function(x_velocity=10, y_velocity=10, max_velocity) {
-    this.set(x_velocity, y_velocity);
-    this.max_velocity = max_velocity;
+var Motion = function(xVelocity=10, yVelocity=10, maxVelocity) {
+    this.set(xVelocity, yVelocity);
+    this.maxVelocity = maxVelocity;
     this.name = "Motion";
 }
 
 Motion.prototype.set = function(x, y) {
-    this.x_velocity = x;
-    this.y_velocity = y;
+    this.xVelocity = x;
+    this.yVelocity = y;
 }
 
 module.exports = Motion;

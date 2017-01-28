@@ -59,7 +59,8 @@ EntityCreator.prototype._createComponentFactory = function() {
             "PlayerInfo": () => { return new PlayerInfo(); },
             "TileMap": () => { return new TileMap(); },
             "Graphics": () => { return new Graphics(); },
-            "Position": () => { return new Position(); }
+            "Position": () => { return new Position(); },
+            "Motion": () => { return new Motion(); }
         }
     }
 

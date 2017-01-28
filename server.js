@@ -92,7 +92,7 @@ Server.prototype._registerNewPlayer = function(socket) {
         var nickname = this._getUserNicknameFromSocketCookies(socket);
         console.log(`=> New player ${nickname} connected`);
         var player = this._entityCreator.createPlayer(nickname, socket);
-        socket.emit('registered', { nickname: nickname });
+        socket.emit('registered', { nickname: nickname, playerId: player.id });
         socket.playerId = player.id;
         socket.playerNickname = nickname;
         this._engine.entities.add(player);

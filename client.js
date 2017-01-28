@@ -1,9 +1,5 @@
 var io = require('socket.io-client');
 var Engine = require('./engine/engine');
-var Circle = require('./engine/gfx/circle');
-var Rect = require('./engine/gfx/rect');
-var ImagePrimitive = require('./engine/gfx/image');
-var PrimitivesGroup = require('./engine/gfx/primitivesGroup');
 var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
@@ -45,25 +41,33 @@ Client.prototype._mapBrowserEvents = function() {
         camera = this._engine.entities.getByName("camera");
         cameraPosition = camera.components.get("Position");
         if (event.keyCode == 87) {
-            cameraPosition.y -= 4;
-            this._socket.emit('keyPressed', { key: 'W' });
+            this._socket.emit('keyDown', { key: 'W' });
         } else if (event.keyCode == 83) {
-            cameraPosition.y += 4;
-            this._socket.emit('keyPressed', { key: 'S' });
+            this._socket.emit('keyDown', { key: 'S' });
         } else if (event.keyCode == 65) {
-            cameraPosition.x -= 4;
-            this._socket.emit('keyPressed', { key: 'A' });
+            this._socket.emit('keyDown', { key: 'A' });
         } else if (event.keyCode == 68) {
-            cameraPosition.x += 4;
-            this._socket.emit('keyPressed', { key: 'D' });
+            this._socket.emit('keyDown', { key: 'D' });
+        }
+    }).bind(this);
+    document.onkeyup = (function(event) {
+        if (event.keyCode == 87) {
+            this._socket.emit('keyUp', { key: 'W' });
+        } else if (event.keyCode == 83) {
+            this._socket.emit('keyUp', { key: 'S' });
+        } else if (event.keyCode == 65) {
+            this._socket.emit('keyUp', { key: 'A' });
+        } else if (event.keyCode == 68) {
+            this._socket.emit('keyUp', { key: 'D' });
         }
     }).bind(this);
 }
 
 Client.prototype._handleSocketEvents = function() {
     this._socket.on('registered', function(data) {
+        this._playerId = data.playerId;
         console.log(`I have been registered with name ${data.nickname}`);
-    });
+    }.bind(this));
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
         this._recreateEntities(gameState.players);
@@ -81,6 +85,10 @@ Client.prototype._recreateEntities = function(entities) {
             this._engine.entities.remove(localEntity);
         this._engine.entities.add(this._entityCreator.recreate(e));
     }
+    // TODO: Remove it. It's only temporary camera centering
+    camera = this._engine.entities.getByName("camera");
+    playerPos = this._engine.entities.getById(this._playerId).components.get("Position");
+    camera.components.get("Position").set(playerPos.x, playerPos.y);
 }
 
 Client.prototype._registerComponentsGroups = function() {

@@ -8,4 +8,9 @@ Position.prototype.set = function(x, y) {
     this.y = y;
 };
 
+Position.prototype.move = function(deltaX, deltaY) {
+    this.x += deltaX;
+    this.y += deltaY;
+}
+
 module.exports = Position;

@@ -14,7 +14,7 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     let playerInfoComponent = new PlayerInfo(name, socket);
     let playerGraphicComponent = new Graphics("player");
     let playerPositionComponent = new Position(500, 500);
-    var playerMotionComponent = new Motion(0, 0, 50);
+    var playerMotionComponent = new Motion(0, 0, 100);
     let player = new Entity([
       playerInfoComponent,
       playerGraphicComponent,
@@ -26,10 +26,10 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
 
 
 EntityCreator.prototype.createMap = function() {
-  var tileMapGenerator = new TileMapGenerator();
-  var tileMap = new TileMap(tileMapGenerator.generate(50, 50), 50, 50);
-  var map = new Entity([tileMap], 'map');
-  return map;
+    var tileMapGenerator = new TileMapGenerator();
+    var tileMap = new TileMap(tileMapGenerator.generate(50, 50), 50, 50);
+    var map = new Entity([tileMap], 'map');
+    return map;
 };
 
 EntityCreator.prototype.createCamera = function(x, y) {
@@ -44,11 +44,11 @@ EntityCreator.prototype.recreate = function(entity) {
 
 EntityCreator.prototype._recreateComponents = function(componentBlueprints) {
     let recreate = (componentBlueprint) => {
-      let component = this._componentFactory.create(componentBlueprint.name);
-      for (let property in componentBlueprint) {
-          component[property] = componentBlueprint[property];
-      }
-      return component;
+        let component = this._componentFactory.create(componentBlueprint.name);
+        for (let property in componentBlueprint) {
+            component[property] = componentBlueprint[property];
+        }
+        return component;
     }
     return componentBlueprints.map(recreate);
 };

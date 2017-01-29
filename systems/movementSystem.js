@@ -14,6 +14,7 @@ MovementSystem.prototype.update = function(time) {
         let deltaX = motion.xVelocity * (time / 1000);
         let deltaY = motion.yVelocity * (time / 1000);
         position.move(deltaX, deltaY);
+        console.log(`Entity ${entity.id} position: ${position.x}, ${position.y}`);
     }
 }
 

@@ -14,7 +14,7 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     let playerInfoComponent = new PlayerInfo(name, socket);
     let playerGraphicComponent = new Graphics("player");
     let playerPositionComponent = new Position(500, 500);
-    var playerMotionComponent = new Motion(0, 0, 200);
+    var playerMotionComponent = new Motion(0, 0, 50);
     let player = new Entity([
       playerInfoComponent,
       playerGraphicComponent,

@@ -49,7 +49,7 @@ TileMapRenderSystem.prototype._renderTiles = function(layer, camera) {
     for(let row = 0 ; row < viewport.nbOfRows ; row++) {
         var x = viewport.viewportXOffset;
         for(let column = 0 ; column < viewport.nbOfColumns ; column++) {
-            tile = layer.tiles[column + viewport.startXTile][row + viewport.startYTile];
+            tile = layer.tiles[row + viewport.startYTile][column + viewport.startXTile];
             this._renderTile(tile, x, y);
             x += Config.TILE_SIZE;
         }

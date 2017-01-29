@@ -32,7 +32,7 @@ Server.prototype.configure = function() {
 Server.prototype.run = function(port) {
     this._server.listen(port);
     console.log("=> Server started");
-    this._engine.entities.add(this._entityCreator.createMap());
+    // this._engine.entities.add(this._entityCreator.createMap());
     this._frameProvider.addAction(this._engine.update.bind(this._engine));
     this._frameProvider.start(10);
 }
@@ -89,6 +89,8 @@ Server.prototype._handleSocketConnection = function(socket) {
 
 Server.prototype._registerNewPlayer = function(socket) {
     try {
+        this._engine.entities.clear();
+        this._engine.entities.add(this._entityCreator.createMap());
         var nickname = this._getUserNicknameFromSocketCookies(socket);
         console.log(`=> New player ${nickname} connected`);
         var player = this._entityCreator.createPlayer(nickname, socket);

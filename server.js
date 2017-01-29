@@ -9,6 +9,7 @@ var EntityCreator = require('./creators/entityCreator');
 var SendGameStateSystem = require('./systems/SendGameStateSystem');
 var PlayerMotionSystem = require('./systems/playerMotionSystem');
 var MovementSystem = require('./systems/movementSystem');
+var PlayerCollisionSystem = require('./systems/playerCollisionSystem');
 var FrameProvider = require('./engine/FrameProvider');
 
 
@@ -70,7 +71,8 @@ Server.prototype._registerComponentsGroups = function() {
 Server.prototype._addSystems = function() {
     this._engine.addSystem(new PlayerMotionSystem(this._engine), 0);
     this._engine.addSystem(new MovementSystem(this._engine), 1);
-    this._engine.addSystem(new SendGameStateSystem(this._engine), 2);
+    this._engine.addSystem(new PlayerCollisionSystem(this._engine), 2)
+    this._engine.addSystem(new SendGameStateSystem(this._engine), 3);
 }
 
 Server.prototype._handleSocketConnection = function(socket) {

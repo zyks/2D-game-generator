@@ -1,4 +1,5 @@
 var Config = require('../Config');
+var Viewport = require('../helpers/Viewport');
 
 var TileMapRenderSystem = function(engine, ctx, atlas) {
     this._engine = engine;
@@ -24,27 +25,8 @@ TileMapRenderSystem.prototype.end = function() {
 
 }
 
-TileMapRenderSystem.prototype._getViewportContext = function(camera, layer) {
-    var ViewportContext = function(camera, map) {
-        cameraPosition = camera.components.get("Position");
-        this.viewportXStart = cameraPosition.x - Math.floor(Config.GAME_WIDTH / 2);
-        this.viewportXStart = Math.max(0, this.viewportXStart);
-        this.viewportXStart = Math.min(layer.width * Config.TILE_SIZE - Config.GAME_WIDTH, this.viewportXStart);
-        this.viewportYStart = cameraPosition.y - Math.floor(Config.GAME_HEIGHT / 2);
-        this.viewportYStart = Math.max(0, this.viewportYStart);
-        this.viewportYStart = Math.min(layer.height * Config.TILE_SIZE - Config.GAME_HEIGHT, this.viewportYStart);
-        this.startXTile = Math.floor(this.viewportXStart / Config.TILE_SIZE);
-        this.startYTile = Math.floor(this.viewportYStart / Config.TILE_SIZE);
-        this.viewportXOffset = this.startXTile * Config.TILE_SIZE - this.viewportXStart;
-        this.viewportYOffset = this.startYTile * Config.TILE_SIZE - this.viewportYStart;
-        this.nbOfRows = Math.ceil(Config.GAME_HEIGHT / Config.TILE_SIZE) + 1;
-        this.nbOfColumns = Math.ceil(Config.GAME_WIDTH / Config.TILE_SIZE) + 1;
-    }
-    return new ViewportContext(camera, layer);
-};
-
 TileMapRenderSystem.prototype._renderTiles = function(layer, camera) {
-    viewport = this._getViewportContext(camera, layer);
+    viewport = new Viewport(layer, camera).renderContext();
     var y = viewport.viewportYOffset;
     for(let row = 0 ; row < viewport.nbOfRows ; row++) {
         var x = viewport.viewportXOffset;

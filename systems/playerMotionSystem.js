@@ -21,8 +21,8 @@ PlayerMotionSystem.prototype.end = function() {
 
 PlayerMotionSystem.prototype._updateMotion = function(pressed, motion) {
     let max = motion.maxVelocity;
-    motion.yVelocity = pressed.S * max || pressed.W * (-1) * max;
-    motion.xVelocity = pressed.D * max || pressed.A * (-1) * max;
+    motion.yVelocity = pressed.MOVE_DOWN * max || pressed.MOVE_UP * (-1) * max;
+    motion.xVelocity = pressed.MOVE_RIGHT * max || pressed.MOVE_LEFT * (-1) * max;
 }
 
 

@@ -4,8 +4,12 @@ var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
+var HandleKeyboardSystem = require('./systems/HandleKeyboardSystem');
+var HandleMouseSystem = require('./systems/HandleMouseSystem');
 var PrimitiveCreator = require('./creators/primitiveCreator');
 var EntityCreator = require('./creators/EntityCreator');
+var Config = require('./Config');
+var KeyCodes = require('./KeyCodes');
 
 var Client = function() {
     this._socket = io();
@@ -25,7 +29,6 @@ Client.prototype._initSprites = function() {
 }
 
 Client.prototype.configure = function() {
-    this._mapBrowserEvents();
     this._registerComponentsGroups();
     this._initSprites();
     this._entityCreator = new EntityCreator();
@@ -34,33 +37,6 @@ Client.prototype.configure = function() {
 
 Client.prototype.run = function() {
 
-}
-
-Client.prototype._mapBrowserEvents = function() {
-    document.onkeydown = (function(event) {
-        camera = this._engine.entities.getByName("camera");
-        cameraPosition = camera.components.get("Position");
-        if (event.keyCode == 87) {
-            this._socket.emit('keyDown', { key: 'W' });
-        } else if (event.keyCode == 83) {
-            this._socket.emit('keyDown', { key: 'S' });
-        } else if (event.keyCode == 65) {
-            this._socket.emit('keyDown', { key: 'A' });
-        } else if (event.keyCode == 68) {
-            this._socket.emit('keyDown', { key: 'D' });
-        }
-    }).bind(this);
-    document.onkeyup = (function(event) {
-        if (event.keyCode == 87) {
-            this._socket.emit('keyUp', { key: 'W' });
-        } else if (event.keyCode == 83) {
-            this._socket.emit('keyUp', { key: 'S' });
-        } else if (event.keyCode == 65) {
-            this._socket.emit('keyUp', { key: 'A' });
-        } else if (event.keyCode == 68) {
-            this._socket.emit('keyUp', { key: 'D' });
-        }
-    }).bind(this);
 }
 
 Client.prototype._handleSocketEvents = function() {
@@ -72,7 +48,7 @@ Client.prototype._handleSocketEvents = function() {
         let gameState = JSON.parse(gameStateString);
         this._recreateEntities(gameState.players);
         this._recreateEntities(gameState.mapLayers);
-        this._engine.update(0);
+        this._engine.update(30);
     }).bind(this));
 }
 
@@ -98,12 +74,24 @@ Client.prototype._registerComponentsGroups = function() {
 }
 
 Client.prototype._addSystems = function() {
+    let actions = [
+        { key: KeyCodes.W, name: "MOVE_UP" },
+        { key: KeyCodes.S, name: "MOVE_DOWN" },
+        { key: KeyCodes.A, name: "MOVE_LEFT" },
+        { key: KeyCodes.D, name: "MOVE_RIGHT" }
+    ]
     this._engine.addSystem(
       new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
     , 0);
     this._engine.addSystem(
       new GraphicEntityRenderSystem(this._engine, this._ctx, this._primitiveCreator)
     , 1);
+    this._engine.addSystem(
+      new HandleKeyboardSystem(this._engine, this._socket, actions)
+    , 2);
+    this._engine.addSystem(
+      new HandleMouseSystem(this._engine, this._socket, this._canvas, 1000)
+    , 3);
 }
 
 

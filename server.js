@@ -76,14 +76,17 @@ Server.prototype._addSystems = function() {
 Server.prototype._handleSocketConnection = function(socket) {
     this._registerNewPlayer(socket);
     socket.on('disconnect', this._unregisterPlayer.bind(this, socket));
+    socket.on('mouseMove', (data) => {
+        console.log(data.x, data.y);
+    });
     socket.on('keyDown', (data) => {
-        console.log(`Player ${socket.playerNickname} has pressed key: ${data.key}`);
+        console.log(`Player ${socket.playerNickname} has pressed key: ${data.action}`);
         player = this._engine.entities.getById(socket.playerId);
-        player.components.get("PlayerInfo").pressed[data.key] = true;
+        player.components.get("PlayerInfo").pressed[data.action] = true;
     });
     socket.on('keyUp', (data) => {
         player = this._engine.entities.getById(socket.playerId);
-        player.components.get("PlayerInfo").pressed[data.key] = false;
+        player.components.get("PlayerInfo").pressed[data.action] = false;
     });
 }
 

@@ -4,10 +4,10 @@ var PlayerInfo = function(nickname, socket) {
     this.socket = socket;
     this.name = "PlayerInfo";
     this.pressed = {
-        W: false,
-        S: false,
-        A: false,
-        D: false
+        MOVE_UP: false,
+        MOVE_DOWN: false,
+        MOVE_LEFT: false,
+        MOVE_RIGHT: false
     };
 }
 

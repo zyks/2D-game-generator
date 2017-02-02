@@ -5,7 +5,8 @@ var PrimitivesGroup = require('./../engine/gfx/primitivesGroup');
 var PrimitiveCreator = function(spritesRepository) {
     this._spritesRepository = spritesRepository;
     this._creators = {
-        player: this.createPlayerPrimitive
+        player: this.createPlayerPrimitive,
+        bullet: this.createBulletPrimitive
     };
 }
 
@@ -28,6 +29,10 @@ PrimitiveCreator.prototype.createPlayerPrimitive = function() {
         new Rect(-8, 8, 16, 6).fill("red")
     ]);
     return head;
+}
+
+PrimitiveCreator.prototype.createBulletPrimitive = function() {
+    return new Circle(0, 0, 12).fill("red");
 }
 
 module.exports = PrimitiveCreator;

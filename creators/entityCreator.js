@@ -4,6 +4,7 @@ var TileMap = require('../components/tileMap');
 var Position = require('../components/position');
 var Graphics = require('../components/graphics');
 var Motion = require('../components/motion');
+var Bullet = require('../components/bullet');
 var TileMapGenerator = require('../TileMapGenerator');
 
 var EntityCreator = function() {
@@ -38,6 +39,14 @@ EntityCreator.prototype.createCamera = function(x, y) {
     return camera;
 };
 
+EntityCreator.prototype.createBullet = function(player, x, y, xVelocity, yVelocity) {
+    let position = new Position(x, y);
+    let motion = new Motion(xVelocity, yVelocity);
+    let graphics = new Graphics("bullet");
+    let bullet = new Bullet(player.id);
+    return new Entity([position, motion, graphics, bullet]);
+}
+
 EntityCreator.prototype.recreate = function(entity) {
     return new Entity(this._recreateComponents(entity.components), entity.name, entity.id);
 }
@@ -60,7 +69,8 @@ EntityCreator.prototype._createComponentFactory = function() {
             "TileMap": () => { return new TileMap(); },
             "Graphics": () => { return new Graphics(); },
             "Position": () => { return new Position(); },
-            "Motion": () => { return new Motion(); }
+            "Motion": () => { return new Motion(); },
+            "Bullet": () => { return new Bullet(); }
         }
     }
 

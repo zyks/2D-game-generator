@@ -8,6 +8,7 @@ var Engine = require('./engine/engine');
 var EntityCreator = require('./creators/entityCreator');
 var SendGameStateSystem = require('./systems/SendGameStateSystem');
 var PlayerMotionSystem = require('./systems/playerMotionSystem');
+var PlayerShootingSystem = require('./systems/PlayerShootingSystem');
 var MovementSystem = require('./systems/movementSystem');
 var FrameProvider = require('./engine/FrameProvider');
 
@@ -62,6 +63,7 @@ Server.prototype._setRouting = function() {
 }
 
 Server.prototype._registerComponentsGroups = function() {
+    this._engine.entities.registerGroup('bullets', ['Bullet'])
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
     this._engine.entities.registerGroup('movement', ['Motion', 'Position']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
@@ -69,6 +71,7 @@ Server.prototype._registerComponentsGroups = function() {
 
 Server.prototype._addSystems = function() {
     this._engine.addSystem(new PlayerMotionSystem(this._engine), 0);
+    this._engine.addSystem(new PlayerShootingSystem(this._engine, this._entityCreator), 0.5)
     this._engine.addSystem(new MovementSystem(this._engine), 1);
     this._engine.addSystem(new SendGameStateSystem(this._engine), 2);
 }
@@ -77,7 +80,8 @@ Server.prototype._handleSocketConnection = function(socket) {
     this._registerNewPlayer(socket);
     socket.on('disconnect', this._unregisterPlayer.bind(this, socket));
     socket.on('mouseMove', (data) => {
-        console.log(data.x, data.y);
+        player = this._engine.entities.getById(socket.playerId);
+        player.components.get("PlayerInfo").mousePosition = data;
     });
     socket.on('keyDown', (data) => {
         console.log(`Player ${socket.playerNickname} has pressed key: ${data.action}`);

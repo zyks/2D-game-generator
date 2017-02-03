@@ -48,6 +48,7 @@ Client.prototype._handleSocketEvents = function() {
         let gameState = JSON.parse(gameStateString);
         this._recreateEntities(gameState.players);
         this._recreateEntities(gameState.mapLayers);
+        this._recreateEntities(gameState.bullets);
         this._engine.update(30);
     }).bind(this));
 }
@@ -78,7 +79,8 @@ Client.prototype._addSystems = function() {
         { key: KeyCodes.W, name: "MOVE_UP" },
         { key: KeyCodes.S, name: "MOVE_DOWN" },
         { key: KeyCodes.A, name: "MOVE_LEFT" },
-        { key: KeyCodes.D, name: "MOVE_RIGHT" }
+        { key: KeyCodes.D, name: "MOVE_RIGHT" },
+        { key: KeyCodes.SHIFT, name: "SHOOT" }
     ]
     this._engine.addSystem(
       new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
@@ -90,7 +92,7 @@ Client.prototype._addSystems = function() {
       new HandleKeyboardSystem(this._engine, this._socket, actions)
     , 2);
     this._engine.addSystem(
-      new HandleMouseSystem(this._engine, this._socket, this._canvas, 1000)
+      new HandleMouseSystem(this._engine, this._socket, this._canvas, 33)
     , 3);
 }
 

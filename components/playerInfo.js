@@ -7,8 +7,12 @@ var PlayerInfo = function(nickname, socket) {
         MOVE_UP: false,
         MOVE_DOWN: false,
         MOVE_LEFT: false,
-        MOVE_RIGHT: false
+        MOVE_RIGHT: false,
+        SHOOT: false
     };
+    this.mousePosition = { x: 0, y: 0 };
+    this.shootingInterval = 700;
+    this.lastShoot = 0;
 }
 
 

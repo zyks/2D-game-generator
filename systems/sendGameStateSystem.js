@@ -39,6 +39,7 @@ SendGameStateSystem.prototype._getGameState = function() {
     }
     let gameState = {
         players: this._engine.entities.getByGroup('players').map(sanitizeEntity),
+        enemies: this._engine.entities.getByGroup('enemies').map(sanitizeEntity),
         mapLayers: this._engine.entities.getByGroup('mapLayers').map(sanitizeEntity),
         bullets: this._engine.entities.getByGroup('bullets').map(sanitizeEntity)
     }

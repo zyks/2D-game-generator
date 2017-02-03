@@ -49,6 +49,7 @@ Client.prototype._handleSocketEvents = function() {
         this._recreateEntities(gameState.players);
         this._recreateEntities(gameState.mapLayers);
         this._recreateEntities(gameState.bullets);
+        this._recreateEntities(gameState.enemies);
         this._engine.update(30);
     }).bind(this));
 }

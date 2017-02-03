@@ -1,14 +1,30 @@
+var TileMap = require('./components/tileMap');
+
 var TileMapGenerator = function() {
     this.EMPTY_TILE = 0;
     this.WALL = 1;
 }
 
-TileMapGenerator.prototype.generate = function(width, height) {
+TileMapGenerator.prototype.generate = function(width, height, nbOfSpawns) {
     this._width = width;
     this._height = height;
     this.initMap()
-        .putWalls();
-    return this._map;
+        .putWalls()
+        .generateSpawnPoints(nbOfSpawns);
+    return new TileMap(this._map, this._width, this._height, this._spawnPoints);
+}
+
+TileMapGenerator.prototype.generateSpawnPoints = function(nbOfSpawns) {
+    this._spawnPoints = [];
+    while(nbOfSpawns) {
+        x = Math.floor(Math.random() * this._width);
+        y = Math.floor(Math.random() * this._height);
+        if(this._map[x][y] != this.EMPTY) {
+            this._spawnPoints.push({ x: x, y: y });
+            nbOfSpawns -= 1;
+        }
+    }
+    return this;
 }
 
 TileMapGenerator.prototype.putWalls = function() {

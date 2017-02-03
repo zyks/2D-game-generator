@@ -8,9 +8,11 @@ var Engine = require('./engine/engine');
 var EntityCreator = require('./creators/entityCreator');
 var SendGameStateSystem = require('./systems/SendGameStateSystem');
 var PlayerMotionSystem = require('./systems/playerMotionSystem');
+var EnemyMotionSystem = require('./systems/enemyMotionSystem');
 var PlayerShootingSystem = require('./systems/PlayerShootingSystem');
 var MovementSystem = require('./systems/movementSystem');
 var FrameProvider = require('./engine/FrameProvider');
+var Config = require('./config');
 
 
 var Server = function() {
@@ -33,7 +35,12 @@ Server.prototype.configure = function() {
 Server.prototype.run = function(port) {
     this._server.listen(port);
     console.log("=> Server started");
-    this._engine.entities.add(this._entityCreator.createMap());
+    let map = this._entityCreator.createMap();
+    this._engine.entities.add(map);
+    let spawns = map.components.get("TileMap").spawns;
+    spawns = spawns.map((s) => { return { x: s.x * Config.TILE_SIZE, y: s.y * Config.TILE_SIZE } });
+    for(let spawn of spawns)
+        this._engine.entities.add(this._entityCreator.createEnemy(spawn.x, spawn.y));
     this._frameProvider.addAction(this._engine.update.bind(this._engine));
     this._frameProvider.start(10);
 }
@@ -65,12 +72,14 @@ Server.prototype._setRouting = function() {
 Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('bullets', ['Bullet'])
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
+    this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
     this._engine.entities.registerGroup('movement', ['Motion', 'Position']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
 }
 
 Server.prototype._addSystems = function() {
     this._engine.addSystem(new PlayerMotionSystem(this._engine), 0);
+    this._engine.addSystem(new EnemyMotionSystem(this._engine), 0.25);
     this._engine.addSystem(new PlayerShootingSystem(this._engine, this._entityCreator), 0.5)
     this._engine.addSystem(new MovementSystem(this._engine), 1);
     this._engine.addSystem(new SendGameStateSystem(this._engine), 2);

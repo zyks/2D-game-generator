@@ -4,7 +4,9 @@ var TileMap = require('../components/tileMap');
 var Position = require('../components/position');
 var Graphics = require('../components/graphics');
 var Motion = require('../components/motion');
+var Geometry = require('../components/geometry');
 var TileMapGenerator = require('../TileMapGenerator');
+var Config = require('../config');
 
 var EntityCreator = function() {
     this._componentFactory = this._createComponentFactory();
@@ -14,12 +16,14 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     let playerInfoComponent = new PlayerInfo(name, socket);
     let playerGraphicComponent = new Graphics("player");
     let playerPositionComponent = new Position(500, 500);
-    var playerMotionComponent = new Motion(0, 0, 100);
+    let playerMotionComponent = new Motion(0, 0, 100);
+    let playerGeometryComponent = new Geometry.Square(Config.TILE_SIZE);
     let player = new Entity([
       playerInfoComponent,
       playerGraphicComponent,
       playerPositionComponent,
-      playerMotionComponent
+      playerMotionComponent,
+      playerGeometryComponent
     ], 'player');
     return player;
 }
@@ -60,7 +64,8 @@ EntityCreator.prototype._createComponentFactory = function() {
             "TileMap": () => { return new TileMap(); },
             "Graphics": () => { return new Graphics(); },
             "Position": () => { return new Position(); },
-            "Motion": () => { return new Motion(); }
+            "Motion": () => { return new Motion(); },
+            "Geometry": () => { return {}; }
         }
     }
 

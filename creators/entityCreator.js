@@ -1,10 +1,12 @@
 var Entity = require('./../engine/entity');
 var PlayerInfo = require('../components/playerInfo');
+var EnemyInfo = require('../components/enemyInfo');
 var TileMap = require('../components/tileMap');
 var Position = require('../components/position');
 var Graphics = require('../components/graphics');
 var Motion = require('../components/motion');
 var Geometry = require('../components/geometry');
+var Bullet = require('../components/bullet');
 var TileMapGenerator = require('../TileMapGenerator');
 var Config = require('../config');
 
@@ -28,10 +30,18 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     return player;
 }
 
+EntityCreator.prototype.createEnemy = function(x, y) {
+    let position = new Position(x, y);
+    let motion = new Motion(0, 0, 100);
+    let graphics = new Graphics("zombie");
+    let enemyInfo = new EnemyInfo();
+    return new Entity([position, motion, graphics, enemyInfo]);
+}
+
 
 EntityCreator.prototype.createMap = function() {
     var tileMapGenerator = new TileMapGenerator();
-    var tileMap = new TileMap(tileMapGenerator.generate(50, 50), 50, 50);
+    var tileMap = tileMapGenerator.generate(50, 50, 18);
     var map = new Entity([tileMap], 'map');
     return map;
 };
@@ -41,6 +51,14 @@ EntityCreator.prototype.createCamera = function(x, y) {
     var camera = new Entity([position], "camera");
     return camera;
 };
+
+EntityCreator.prototype.createBullet = function(player, x, y, xVelocity, yVelocity) {
+    let position = new Position(x, y);
+    let motion = new Motion(xVelocity, yVelocity);
+    let graphics = new Graphics("bullet");
+    let bullet = new Bullet(player.id);
+    return new Entity([position, motion, graphics, bullet]);
+}
 
 EntityCreator.prototype.recreate = function(entity) {
     return new Entity(this._recreateComponents(entity.components), entity.name, entity.id);
@@ -61,11 +79,13 @@ EntityCreator.prototype._createComponentFactory = function() {
     let ComponentFactory = function() {
         this._workers = {
             "PlayerInfo": () => { return new PlayerInfo(); },
+            "EnemyInfo": () => { return new EnemyInfo(); },
             "TileMap": () => { return new TileMap(); },
             "Graphics": () => { return new Graphics(); },
             "Position": () => { return new Position(); },
             "Motion": () => { return new Motion(); },
-            "Geometry": () => { return {}; }
+            "Geometry": () => { return {}; },
+            "Bullet": () => { return new Bullet(); }
         }
     }
 

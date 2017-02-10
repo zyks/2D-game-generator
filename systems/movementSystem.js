@@ -7,7 +7,7 @@ MovementSystem.prototype.start = function() {
 }
 
 MovementSystem.prototype.update = function(time) {
-    entities = this._engine.entities.getByGroup('movement');
+    let entities = this._engine.entities.getByGroup('movement');
     for (let entity of entities) {
         let motion = entity.components.get('Motion');
         let position = entity.components.get('Position');

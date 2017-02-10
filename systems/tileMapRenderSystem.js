@@ -13,10 +13,10 @@ TileMapRenderSystem.prototype.start = function() {
 }
 
 TileMapRenderSystem.prototype.update = function(deltaTime) {
-    mapLayers = this._engine.entities.getByGroup("mapLayers");
-    camera = this._engine.entities.getByName("camera");
+    let mapLayers = this._engine.entities.getByGroup("mapLayers");
+    let camera = this._engine.entities.getByName("camera");
     for(let layerEntity of mapLayers) {
-        layer = layerEntity.components.get("TileMap");
+        let layer = layerEntity.components.get("TileMap");
         this._renderTiles(layer, camera);
     }
 }

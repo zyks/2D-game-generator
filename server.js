@@ -12,6 +12,8 @@ var EnemyMotionSystem = require('./systems/enemyMotionSystem');
 var PlayerShootingSystem = require('./systems/PlayerShootingSystem');
 var MovementSystem = require('./systems/movementSystem');
 var PlayerMapCollisionSystem = require('./systems/playerMapCollisionSystem');
+var BulletCollisionSystem = require('./systems/bulletCollisionSystem');
+var CharacterDeathSystem = require('./systems/characterDeathSystem');
 var FrameProvider = require('./engine/FrameProvider');
 var Config = require('./config');
 
@@ -76,6 +78,7 @@ Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
     this._engine.entities.registerGroup('movement', ['Motion', 'Position']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
+    this._engine.entities.registerGroup('characters', ['Character']);
 }
 
 Server.prototype._addSystems = function() {
@@ -83,8 +86,10 @@ Server.prototype._addSystems = function() {
     this._engine.addSystem(new EnemyMotionSystem(this._engine), 0.25);
     this._engine.addSystem(new PlayerShootingSystem(this._engine, this._entityCreator), 0.5)
     this._engine.addSystem(new MovementSystem(this._engine), 1);
-    this._engine.addSystem(new PlayerMapCollisionSystem(this._engine), 2)
-    this._engine.addSystem(new SendGameStateSystem(this._engine), 3);
+    this._engine.addSystem(new PlayerMapCollisionSystem(this._engine), 2);
+    this._engine.addSystem(new BulletCollisionSystem(this._engine), 3);
+    this._engine.addSystem(new CharacterDeathSystem(this._engine), 4);
+    this._engine.addSystem(new SendGameStateSystem(this._engine), 5);
 }
 
 Server.prototype._handleSocketConnection = function(socket) {

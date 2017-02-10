@@ -1,9 +1,10 @@
 var Config = require('../Config');
+var PrimitiveCreator = require('../creators/primitiveCreator');
 
-var GraphicEntityRenderSystem = function(engine, ctx, primitiveCreator = null) {
+var GraphicEntityRenderSystem = function(engine, ctx) {
     this._engine = engine;
     this._ctx = ctx;
-    this._primitiveCreator = primitiveCreator;
+    this._primitiveCreator = new PrimitiveCreator();
 }
 
 

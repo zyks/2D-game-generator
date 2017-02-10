@@ -6,7 +6,6 @@ var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
 var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
 var HandleKeyboardSystem = require('./systems/HandleKeyboardSystem');
 var HandleMouseSystem = require('./systems/HandleMouseSystem');
-var PrimitiveCreator = require('./creators/primitiveCreator');
 var EntityCreator = require('./creators/EntityCreator');
 var Config = require('./Config');
 var KeyCodes = require('./KeyCodes');
@@ -16,7 +15,6 @@ var Client = function() {
     this._engine = new Engine();
     this._canvas = document.getElementById("gameCanvas");
     this._ctx = this._canvas.getContext("2d");
-    this._primitiveCreator = new PrimitiveCreator();
 }
 
 Client.prototype._initSprites = function() {
@@ -46,6 +44,8 @@ Client.prototype._handleSocketEvents = function() {
     }.bind(this));
     this._socket.on('gameState', (function(gameStateString) {
         let gameState = JSON.parse(gameStateString);
+        this._engine.entities.clearGroup("enemies");
+        this._engine.entities.clearGroup("bullets");
         this._recreateEntities(gameState.players);
         this._recreateEntities(gameState.mapLayers);
         this._recreateEntities(gameState.bullets);
@@ -72,7 +72,9 @@ Client.prototype._recreateEntities = function(entities) {
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
-    this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position'])
+    this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position']);
+    this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
+    this._engine.entities.registerGroup('bullets', ['Bullet']);
 }
 
 Client.prototype._addSystems = function() {
@@ -87,7 +89,7 @@ Client.prototype._addSystems = function() {
       new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
     , 0);
     this._engine.addSystem(
-      new GraphicEntityRenderSystem(this._engine, this._ctx, this._primitiveCreator)
+      new GraphicEntityRenderSystem(this._engine, this._ctx)
     , 1);
     this._engine.addSystem(
       new HandleKeyboardSystem(this._engine, this._socket, actions)

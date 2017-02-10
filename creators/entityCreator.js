@@ -7,6 +7,7 @@ var Graphics = require('../components/graphics');
 var Motion = require('../components/motion');
 var Geometry = require('../components/geometry');
 var Bullet = require('../components/bullet');
+var Character = require('../components/character');
 var TileMapGenerator = require('../TileMapGenerator');
 var Config = require('../config');
 
@@ -18,7 +19,7 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     let playerInfoComponent = new PlayerInfo(name, socket);
     let playerGraphicComponent = new Graphics("player");
     let playerPositionComponent = new Position(500, 500);
-    let playerMotionComponent = new Motion(0, 0, 100);
+    let playerMotionComponent = new Motion(0, 0, 150);
     let playerGeometryComponent = new Geometry.Square(Config.TILE_SIZE);
     let player = new Entity([
       playerInfoComponent,
@@ -32,10 +33,12 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
 
 EntityCreator.prototype.createEnemy = function(x, y) {
     let position = new Position(x, y);
-    let motion = new Motion(0, 0, 100);
+    let motion = new Motion(0, 0, 50);
     let graphics = new Graphics("zombie");
     let enemyInfo = new EnemyInfo();
-    return new Entity([position, motion, graphics, enemyInfo]);
+    let geometry = new Geometry.Square(Config.TILE_SIZE);
+    let character = new Character(2);
+    return new Entity([position, motion, graphics, enemyInfo, geometry, character]);
 }
 
 
@@ -57,7 +60,8 @@ EntityCreator.prototype.createBullet = function(player, x, y, xVelocity, yVeloci
     let motion = new Motion(xVelocity, yVelocity);
     let graphics = new Graphics("bullet");
     let bullet = new Bullet(player.id);
-    return new Entity([position, motion, graphics, bullet]);
+    let geometry = new Geometry.Circle(12);
+    return new Entity([position, motion, graphics, bullet, geometry]);
 }
 
 EntityCreator.prototype.recreate = function(entity) {
@@ -85,7 +89,8 @@ EntityCreator.prototype._createComponentFactory = function() {
             "Position": () => { return new Position(); },
             "Motion": () => { return new Motion(); },
             "Geometry": () => { return {}; },
-            "Bullet": () => { return new Bullet(); }
+            "Bullet": () => { return new Bullet(); },
+            "Character": () => { return new Character(); }
         }
     }
 

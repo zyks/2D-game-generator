@@ -23,19 +23,33 @@ PlayerDoorInteractionSystem.prototype.end = function() {
 
 PlayerDoorInteractionSystem.prototype._checkDoorsInteraction = function(player) {
     let doors = this._engine.entities.getByGroup("doors");
-    for (let door of doors) {
-        let mousePosition = player.components.get("PlayerInfo").mousePosition;
-        let tilePosition = door.components.get("Position");
-        let distance = this._getPlayerDoorDistance(player, door);
-        if (this._isMouseOnTile(mousePosition, tilePosition) && distance < this._minDistance)
+    for (let door of doors)
+        if (this._actionShouldBePerformed(player, door))
             this._performAction(player, door);
-    }
+}
+
+PlayerDoorInteractionSystem.prototype._actionShouldBePerformed = function(player, door) {
+    let mPos = player.components.get("PlayerInfo").mousePosition;
+    let pPos = player.components.get("Position");
+    let tPos = door.components.get("Position");
+    let keyId = door.components.get("DoorInfo").keyId;
+    let distance = Math.hypot(pPos.x - tPos.x, pPos.y - tPos.y);
+    return this._isMouseOnTile(mPos, tPos) &&
+           distance < this._minDistance &&
+           this._playerHasKey(player, keyId);
 }
 
 PlayerDoorInteractionSystem.prototype._isMouseOnTile = function(mouse, tileCenter) {
     let x = mouse.x - (mouse.x % Config.TILE_SIZE) + Config.TILE_SIZE / 2;
     let y = mouse.y - (mouse.y % Config.TILE_SIZE) + Config.TILE_SIZE / 2;
     return x === tileCenter.x && y === tileCenter.y;
+}
+
+PlayerDoorInteractionSystem.prototype._playerHasKey = function(player, keyId) {
+    if (!keyId) return true;
+    let result = player.components.get("ItemList").containsItemWithId(keyId);
+    if (!result) console.log(`Player ${player.id} doesn't have a key ${keyId}`);
+    return result;
 }
 
 PlayerDoorInteractionSystem.prototype._performAction = function(player, door) {
@@ -54,10 +68,5 @@ PlayerDoorInteractionSystem.prototype._closeDoor = function(door) {
     door.components.get("Graphics").primitive = "doorClosed";
 }
 
-PlayerDoorInteractionSystem.prototype._getPlayerDoorDistance = function(player, door) {
-    let p = player.components.get("Position");
-    let d = door.components.get("Position");
-    return Math.sqrt(Math.pow(p.x - d.x, 2) + Math.pow(p.y - d.y, 2));
-}
-module.exports = PlayerDoorInteractionSystem;
 
+module.exports = PlayerDoorInteractionSystem;

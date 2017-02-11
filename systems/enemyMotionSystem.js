@@ -21,15 +21,18 @@ EnemyMotionSystem.prototype._updateMotion = function(enemy) {
     let position = enemy.components.get("Position");
     let motion = enemy.components.get("Motion");
     player = this._getClosestPlayerInSight(info, position);
-    if(!player) return;
-    playerPos = player.components.get("Position")
-    let x = playerPos.x - position.x;
-    let y = playerPos.y - position.y;
-    let length = Math.sqrt(x*x + y*y);
-    let speed = 100;
-    let xVel = x / length * speed;
-    let yVel = y / length * speed;
-    motion.set(xVel, yVel);
+    if(!player) {
+        motion.set(0, 0);
+    } else {
+        playerPos = player.components.get("Position")
+        let x = playerPos.x - position.x;
+        let y = playerPos.y - position.y;
+        let length = Math.sqrt(x*x + y*y);
+        let speed = 100;
+        let xVel = x / length * speed;
+        let yVel = y / length * speed;
+        motion.set(xVel, yVel);
+    }
 }
 
 EnemyMotionSystem.prototype._getClosestPlayerInSight = function(info, position) {

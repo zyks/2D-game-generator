@@ -8,6 +8,7 @@ var Motion = require('../components/motion');
 var Geometry = require('../components/geometry');
 var Bullet = require('../components/bullet');
 var Character = require('../components/character');
+var DoorInfo = require('../components/doorInfo');
 var TileMapGenerator = require('../TileMapGenerator');
 var Config = require('../config');
 
@@ -64,6 +65,14 @@ EntityCreator.prototype.createBullet = function(player, x, y, xVelocity, yVeloci
     return new Entity([position, motion, graphics, bullet, geometry]);
 }
 
+EntityCreator.prototype.createDoor = function(x, y) {
+    let info = new DoorInfo();
+    let position = new Position(x, y);
+    let graphics = new Graphics("doorClosed");
+    let geometry = new Geometry.Square(Config.TILE_SIZE);
+    return new Entity([info, position, graphics, geometry]);
+}
+
 EntityCreator.prototype.recreate = function(entity) {
     return new Entity(this._recreateComponents(entity.components), entity.name, entity.id);
 }
@@ -90,7 +99,8 @@ EntityCreator.prototype._createComponentFactory = function() {
             "Motion": () => { return new Motion(); },
             "Geometry": () => { return {}; },
             "Bullet": () => { return new Bullet(); },
-            "Character": () => { return new Character(); }
+            "Character": () => { return new Character(); },
+            "DoorInfo": () => { return new DoorInfo(); }
         }
     }
 

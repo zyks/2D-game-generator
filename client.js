@@ -3,6 +3,7 @@ var Engine = require('./engine/engine');
 var SpritesRepository = require('./engine/SpritesRepository');
 var Entity = require('./engine/Entity');
 var TileMapRenderSystem = require('./systems/TileMapRenderSystem');
+var MiniMapRenderSystem = require('./systems/MiniMapRenderSystem');
 var GraphicEntityRenderSystem = require('./systems/GraphicEntityRenderSystem');
 var HandleKeyboardSystem = require('./systems/HandleKeyboardSystem');
 var HandleMouseSystem = require('./systems/HandleMouseSystem');
@@ -15,6 +16,7 @@ var Client = function() {
     this._engine = new Engine();
     this._canvas = document.getElementById("gameCanvas");
     this._ctx = this._canvas.getContext("2d");
+    this._hudCtx = document.getElementById("hudCanvas").getContext("2d");
 }
 
 Client.prototype._initSprites = function() {
@@ -71,6 +73,7 @@ Client.prototype._recreateEntities = function(entities) {
 
 Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('players', ['PlayerInfo']);
+    this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
     this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position']);
     this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
@@ -91,6 +94,9 @@ Client.prototype._addSystems = function() {
     this._engine.addSystem(
       new GraphicEntityRenderSystem(this._engine, this._ctx)
     , 1);
+    this._engine.addSystem(
+      new MiniMapRenderSystem(this._engine, this._hudCtx, this._sprites.get("atlas"))
+    , 1.5);
     this._engine.addSystem(
       new HandleKeyboardSystem(this._engine, this._socket, actions)
     , 2);

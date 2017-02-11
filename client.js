@@ -50,6 +50,7 @@ Client.prototype._handleSocketEvents = function() {
         this._recreateEntities(gameState.mapLayers);
         this._recreateEntities(gameState.bullets);
         this._recreateEntities(gameState.enemies);
+        this._recreateEntities(gameState.doors);
         this._engine.update(30);
     }).bind(this));
 }
@@ -83,6 +84,7 @@ Client.prototype._addSystems = function() {
         { key: KeyCodes.S, name: "MOVE_DOWN" },
         { key: KeyCodes.A, name: "MOVE_LEFT" },
         { key: KeyCodes.D, name: "MOVE_RIGHT" },
+        { key: KeyCodes.E, name: "ACTION" },
         { key: KeyCodes.SHIFT, name: "SHOOT" }
     ]
     this._engine.addSystem(

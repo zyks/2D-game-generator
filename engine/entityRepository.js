@@ -22,10 +22,23 @@ EntityRepository.prototype.remove = function(entity) {
         delete this._entitiesByName[entity.name];
 }
 
+EntityRepository.prototype.removeById = function(id) {
+    for (let name in this._entitiesByGroup)
+        for (let i = 0; i < this._entitiesByGroup[name].length; i++)
+            if (this._entitiesByGroup[name][i].id === id)
+                this._entitiesByGroup[name].splice(i, 1);
+}
+
 EntityRepository.prototype.clear = function() {
     for (let name in this._entitiesByGroup)
         this._entitiesByGroup[name] = [];
     this._entitiesByName = {};
+}
+
+EntityRepository.prototype.clearGroup = function(name) {
+    let entities = this.getByGroup(name);
+    for (let entity of entities)
+        this.removeById(entity.id);
 }
 
 EntityRepository.prototype.getById = function(id) {

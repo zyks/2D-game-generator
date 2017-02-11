@@ -10,7 +10,8 @@ var PrimitiveCreator = function(spritesRepository) {
         zombie: this.createZombiePrimitive,
         bullet: this.createBulletPrimitive,
         doorOpen: this.createDoorPrimitive.bind(this, "open"),
-        doorClosed: this.createDoorPrimitive.bind(this, "closed")
+        doorClosed: this.createDoorPrimitive.bind(this, "closed"),
+        chest: this.createChestPrimitive
     };
 }
 
@@ -67,6 +68,10 @@ PrimitiveCreator.prototype.createDoorPrimitive = function(state) {
         closed: "red"
     }
     return new Rect(-24, -24, 48, 48).fill(colors[state]);
+}
+
+PrimitiveCreator.prototype.createChestPrimitive = function(state) {
+    return new Rect(-24, -24, 48, 48).fill("brown");
 }
 
 

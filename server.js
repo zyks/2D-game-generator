@@ -14,7 +14,7 @@ var MovementSystem = require('./systems/movementSystem');
 var PlayerCollisionSystem = require('./systems/playerCollisionSystem');
 var BulletCollisionSystem = require('./systems/bulletCollisionSystem');
 var CharacterDeathSystem = require('./systems/characterDeathSystem');
-var PlayerDoorInteractionSystem = require('./systems/playerDoorInteractionSystem');
+var PlayerInteractionSystem = require('./systems/playerInteractionSystem');
 var FrameProvider = require('./engine/FrameProvider');
 var Config = require('./config');
 
@@ -60,6 +60,9 @@ Server.prototype._initializeMap = function() {
         this._engine.entities.add(
             this._entityCreator.createDoor(door.x, door.y, key.id)
         );
+        this._engine.entities.add(
+            this._entityCreator.createChest(door.x - Config.TILE_SIZE, door.y, [key.id])
+        );
     }
 }
 
@@ -95,6 +98,8 @@ Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
     this._engine.entities.registerGroup('characters', ['Character']);
     this._engine.entities.registerGroup('doors', ['DoorInfo']);
+    this._engine.entities.registerGroup('chests', ['ChestInfo']);
+    this._engine.entities.registerGroup('items', ['ItemInfo']);
 }
 
 Server.prototype._addSystems = function() {
@@ -105,7 +110,7 @@ Server.prototype._addSystems = function() {
     this._engine.addSystem(new PlayerCollisionSystem(this._engine), 2);
     this._engine.addSystem(new BulletCollisionSystem(this._engine), 3);
     this._engine.addSystem(new CharacterDeathSystem(this._engine), 4);
-    this._engine.addSystem(new PlayerDoorInteractionSystem(this._engine), 5);
+    this._engine.addSystem(new PlayerInteractionSystem(this._engine), 5);
     this._engine.addSystem(new SendGameStateSystem(this._engine), 6);
 }
 

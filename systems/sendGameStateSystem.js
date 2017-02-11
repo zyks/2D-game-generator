@@ -42,7 +42,8 @@ SendGameStateSystem.prototype._getGameState = function() {
         enemies: this._engine.entities.getByGroup('enemies').map(sanitizeEntity),
         mapLayers: this._engine.entities.getByGroup('mapLayers').map(sanitizeEntity),
         bullets: this._engine.entities.getByGroup('bullets').map(sanitizeEntity),
-        doors: this._engine.entities.getByGroup('doors').map(sanitizeEntity)
+        doors: this._engine.entities.getByGroup('doors').map(sanitizeEntity),
+        chests: this._engine.entities.getByGroup('chests').map(sanitizeEntity)
     }
     return gameState;
 }

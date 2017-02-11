@@ -11,9 +11,10 @@ var PlayerMotionSystem = require('./systems/playerMotionSystem');
 var EnemyMotionSystem = require('./systems/enemyMotionSystem');
 var PlayerShootingSystem = require('./systems/PlayerShootingSystem');
 var MovementSystem = require('./systems/movementSystem');
-var PlayerMapCollisionSystem = require('./systems/playerMapCollisionSystem');
+var PlayerCollisionSystem = require('./systems/playerCollisionSystem');
 var BulletCollisionSystem = require('./systems/bulletCollisionSystem');
 var CharacterDeathSystem = require('./systems/characterDeathSystem');
+var PlayerDoorInteractionSystem = require('./systems/playerDoorInteractionSystem');
 var FrameProvider = require('./engine/FrameProvider');
 var Config = require('./config');
 
@@ -38,14 +39,23 @@ Server.prototype.configure = function() {
 Server.prototype.run = function(port) {
     this._server.listen(port);
     console.log("=> Server started");
-    let map = this._entityCreator.createMap();
-    this._engine.entities.add(map);
-    let spawns = map.components.get("TileMap").spawns;
-    spawns = spawns.map((s) => { return { x: s.x * Config.TILE_SIZE, y: s.y * Config.TILE_SIZE } });
-    for(let spawn of spawns)
-        this._engine.entities.add(this._entityCreator.createEnemy(spawn.x, spawn.y));
+    this._initializeMap();
     this._frameProvider.addAction(this._engine.update.bind(this._engine));
     this._frameProvider.start(10);
+}
+
+Server.prototype._initializeMap = function() {
+    let map = this._entityCreator.createMap();
+    this._engine.entities.add(map);
+    let adjustPosition = function(e) {
+        return { x: (e.x + 0.5) * Config.TILE_SIZE, y: (e.y + 0.5) * Config.TILE_SIZE } 
+    }
+    let spawns = map.components.get("TileMap").spawns.map(adjustPosition);
+    let doors = map.components.get("TileMap").doors.map(adjustPosition);
+    // for(let spawn of spawns)
+    //     this._engine.entities.add(this._entityCreator.createEnemy(spawn.x, spawn.y));
+    for(let door of doors)
+        this._engine.entities.add(this._entityCreator.createDoor(door.x, door.y));
 }
 
 Server.prototype._setServerOptions = function() {
@@ -79,17 +89,19 @@ Server.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('movement', ['Motion', 'Position']);
     this._engine.entities.registerGroup('mapLayers', ['TileMap']);
     this._engine.entities.registerGroup('characters', ['Character']);
+    this._engine.entities.registerGroup('doors', ['DoorInfo']);
 }
 
 Server.prototype._addSystems = function() {
     this._engine.addSystem(new PlayerMotionSystem(this._engine), 0);
     this._engine.addSystem(new EnemyMotionSystem(this._engine), 0.25);
-    this._engine.addSystem(new PlayerShootingSystem(this._engine, this._entityCreator), 0.5)
+    this._engine.addSystem(new PlayerShootingSystem(this._engine, this._entityCreator), 0.5);
     this._engine.addSystem(new MovementSystem(this._engine), 1);
-    this._engine.addSystem(new PlayerMapCollisionSystem(this._engine), 2);
+    this._engine.addSystem(new PlayerCollisionSystem(this._engine), 2);
     this._engine.addSystem(new BulletCollisionSystem(this._engine), 3);
     this._engine.addSystem(new CharacterDeathSystem(this._engine), 4);
-    this._engine.addSystem(new SendGameStateSystem(this._engine), 5);
+    this._engine.addSystem(new PlayerDoorInteractionSystem(this._engine), 5);
+    this._engine.addSystem(new SendGameStateSystem(this._engine), 6);
 }
 
 Server.prototype._handleSocketConnection = function(socket) {
@@ -100,7 +112,7 @@ Server.prototype._handleSocketConnection = function(socket) {
         player.components.get("PlayerInfo").mousePosition = data;
     });
     socket.on('keyDown', (data) => {
-        console.log(`Player ${socket.playerNickname} has pressed key: ${data.action}`);
+        // console.log(`Player ${socket.playerNickname} has pressed key: ${data.action}`);
         player = this._engine.entities.getById(socket.playerId);
         player.components.get("PlayerInfo").pressed[data.action] = true;
     });

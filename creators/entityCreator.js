@@ -29,8 +29,9 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
     let motion = new Motion(0, 0, 150);
     let geometry = new Geometry.Square(Config.TILE_SIZE);
     let itemList = new ItemList();
+    let character = new Character(1000);
     let player = new Entity(
-        [info, graphics, position, motion, geometry, itemList],
+        [info, graphics, position, motion, geometry, itemList, character], 
         'player'
     );
     return player;
@@ -38,7 +39,7 @@ EntityCreator.prototype.createPlayer = function(name, socket) {
 
 EntityCreator.prototype.createEnemy = function(x, y) {
     let position = new Position(x, y);
-    let motion = new Motion(0, 0, 50);
+    let motion = new Motion(0, 0, 100);
     let graphics = new Graphics("zombie");
     let enemyInfo = new EnemyInfo();
     let geometry = new Geometry.Square(Config.TILE_SIZE);

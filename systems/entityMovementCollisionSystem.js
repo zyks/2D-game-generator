@@ -55,8 +55,11 @@ EntityMovementCollisionSystem.prototype._checkCollisionWithTiles = function(enti
 }
 
 EntityMovementCollisionSystem.prototype._checkCollisionWithTileMap = function(entity, tileMap, callback) {
-    for (let column = 0; column < tileMap.width; column++)
-        for (let row = 0; row < tileMap.height; row++)
+    let position = entity.components.get("Position");
+    let r = Math.max(Math.floor(position.x / Config.TILE_SIZE) - 1, 0);
+    let c = Math.max(Math.floor(position.y / Config.TILE_SIZE) - 1, 0);
+    for (let row = r; row < r + 3; row++)
+        for (let column = c; column < c + 3; column++)
             if (tileMap.tiles[column][row] === 1) { // TODO: better wall checking
                 let response = this._checkCollisionWithTile(entity, row, column);
                 if (response.result)

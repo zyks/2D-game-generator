@@ -14,24 +14,35 @@ MapSchemaCreator.prototype.create = function(width, height) {
     while(this.nonTerminalsPos.length > 0) {
         let nonTerminalPos = this.nonTerminalsPos.shift();
         let nonTerminal = this.squares[nonTerminalPos.y][nonTerminalPos.x];
-        let availablePositions = this._getFreeNeighbours(nonTerminalPos.x, nonTerminalPos.y);
-        availablePositions.push(nonTerminalPos);
-        let availableProductions = this._productions[nonTerminal].filter((production) => {
-            return production.nonTerminals.length <= availablePositions.length;
-        });
-        let production = this._pickProduction(availableProductions);
-        console.log(nonTerminal, " --> ", production.nonTerminals);
-        for(let t of production.nonTerminals) {
-            let pos = availablePositions.pop();
-            this.squares[pos.y][pos.x] = t;
-            if(t[0] == t[0].toUpperCase())
-                this.nonTerminalsPos.push(pos);
-            this._updateEdges(pos, nonTerminalPos);
-        }
+        this._processNonTerminal(nonTerminal, nonTerminalPos);
     }
-    console.log(this.edges)
     console.log(this.squares);
     return { squares: this.squares, edges: this.edges };
+}
+
+MapSchemaCreator.prototype._processNonTerminal = function(nonTerminal, nonTerminalPos) {
+    let availablePositions = this._getFreeNeighbours(nonTerminalPos.x, nonTerminalPos.y);
+    availablePositions.push(nonTerminalPos);
+    let availableProductions = this._getAvailableProductions(nonTerminal, availablePositions);
+    let production = this._pickProduction(availableProductions);
+    console.log(nonTerminal, " --> ", production.nonTerminals);
+    for(let t of production.nonTerminals) {
+        let pos = availablePositions.pop();
+        this.squares[pos.y][pos.x] = t;
+        if(this._isNonTerminal(t))
+            this.nonTerminalsPos.push(pos);
+        this._updateEdges(pos, nonTerminalPos);
+    }
+}
+
+MapSchemaCreator.prototype._isNonTerminal = function(t) {
+    return t[0] == t[0].toUpperCase();
+}
+
+MapSchemaCreator.prototype._getAvailableProductions = function(nonTerminal, availablePositions) {
+    return this._productions[nonTerminal].filter((production) => {
+        return production.nonTerminals.length <= availablePositions.length;
+    });
 }
 
 MapSchemaCreator.prototype._pickProduction = function(productions) {

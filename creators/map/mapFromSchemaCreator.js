@@ -3,6 +3,7 @@ var TileMap = require('./../../components/tileMap');
 var MapFromSchemaCreator = function(schema, squareSize = 10) {
     this.EMPTY_TILE = 0;
     this.WALL = 1;
+    this.DOOR = 2;
     this._schema = schema;
     this._squareSize = squareSize;
     this._width = this._schema.squares[0].length * this._squareSize;
@@ -106,11 +107,7 @@ MapFromSchemaCreator.prototype._buildDoor = function(squareSize, edges, referenc
     let square = this._buildCorridor(squareSize, edges);
     let spawns = []
     let half = Math.floor(squareSize/2);
-    square.tiles[half][half] = this.EMPTY_TILE;
-    square.tiles[half-1][half-1] = this.WALL;
-    square.tiles[half+1][half-1] = this.WALL;
-    square.tiles[half+1][half+1] = this.WALL;
-    square.tiles[half-1][half+1] = this.WALL;
+    square.tiles[half][half] = this.DOOR;
     let door = { x: half, y: half, key: references["key-door"] };
     return { tiles: square.tiles, doors: [door] };
 }

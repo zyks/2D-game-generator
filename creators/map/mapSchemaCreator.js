@@ -4,8 +4,8 @@ var MapSchemaCreator = function() {
     this._productions = GrammarProductions;
 }
 
-MapSchemaCreator.prototype.create = function(width, height) {
-    let startPos = { x: 2, y: 2 };
+MapSchemaCreator.prototype.create = function(width, height, startX, startY) {
+    let startPos = { x: startX, y: startY };
     let startNonTerminal = { name: "Start", pos: startPos, references: {} };
     this._width = width;
     this._height = height;

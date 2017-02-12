@@ -64,7 +64,11 @@ Server.prototype._initializeMap = function() {
         );
         console.log(door);
         this._engine.entities.add(
-            this._entityCreator.createChest(door.key.x * Config.TILE_SIZE, door.key.y * Config.TILE_SIZE, [key.id])
+            this._entityCreator.createChest(
+                (door.key.x + 0.5) * Config.TILE_SIZE,
+                (door.key.y + 0.5) * Config.TILE_SIZE,
+                [key.id]
+            )
         );
     }
 }

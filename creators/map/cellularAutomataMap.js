@@ -1,6 +1,7 @@
 var CellularAutomataMap = function() {
     this.EMPTY_TILE = 0;
     this.WALL = 1;
+    this.DOOR = 2;
 }
 
 CellularAutomataMap.prototype.run = function(map, steps) {
@@ -8,7 +9,8 @@ CellularAutomataMap.prototype.run = function(map, steps) {
     this._width = map[0].length;
     this._height = map.length;
     this.cellularAutomata(steps)
-        .putBorders();
+        .putBorders()
+        .putDoorsBorders();
     return this._map;
 }
 
@@ -17,6 +19,21 @@ CellularAutomataMap.prototype.putBorders = function() {
         this._map[0][i] = this._map[this._height-1][i] = this.WALL;
     for(let i = 0 ; i < this._height ; i++)
         this._map[i][0] = this._map[i][this._width-1] = this.WALL;
+    return this;
+}
+
+CellularAutomataMap.prototype.putDoorsBorders = function() {
+    for(var i = 0; i < this._height; i++)
+        for(var j = 0; j < this._width; j++)
+            if(this._map[i][j] == this.DOOR) {
+                this._map[i][j] = this.EMPTY_TILE;
+                for(var k = 1 ; k <= 3 ; k++) {
+                    this._map[i-k][j-k] = this.WALL;
+                    this._map[i+k][j-k] = this.WALL;
+                    this._map[i+k][j+k] = this.WALL;
+                    this._map[i-k][j+k] = this.WALL;
+                }
+            }
     return this;
 }
 
@@ -31,9 +48,11 @@ CellularAutomataMap.prototype._cellularAutomataStep = function() {
     for(var i = 0; i < this._height; i++) {
         for(var j = 0; j < this._width; j++) {
             let walls = this._calculateNeighbours(j, i, this.WALL);
-            if(this._map[j][i] == this.WALL)
+            if(this._map[j][i] == this.DOOR)
+                map[j][i] = this.DOOR;
+            else if(this._map[j][i] == this.WALL)
                 map[j][i] = walls >= 4 ? this.WALL : this.EMPTY_TILE;
-            if(this._map[j][i] == this.EMPTY_TILE)
+            else if(this._map[j][i] == this.EMPTY_TILE)
                 map[j][i] = walls > 4 ? this.WALL : this.EMPTY_TILE;
         }
     }

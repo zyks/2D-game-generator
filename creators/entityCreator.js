@@ -25,7 +25,7 @@ var EntityCreator = function() {
 EntityCreator.prototype.createPlayer = function(name, socket) {
     let info = new PlayerInfo(name, socket);
     let graphics  = new Graphics("player");
-    let position = new Position(500, 500);
+    let position = new Position(350, 350);
     let motion = new Motion(0, 0, 150);
     let geometry = new Geometry.Square(Config.TILE_SIZE);
     let itemList = new ItemList();
@@ -51,7 +51,7 @@ EntityCreator.prototype.createEnemy = function(x, y) {
 
 EntityCreator.prototype.createMap = function() {
     console.log(MapSchemaCreator);
-    var schema = new MapSchemaCreator().create(6, 6);
+    var schema = new MapSchemaCreator().create(6, 6, 0, 0);
     var tileMap = new MapFromSchemaCreator(schema).create();
     tileMap.tiles = new CellularAutomataMap().run(tileMap.tiles, Math.floor(Math.random()*3));
     var map = new Entity([tileMap], 'map');

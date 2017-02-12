@@ -8,6 +8,10 @@ var Motion = require('../components/motion');
 var Geometry = require('../components/geometry');
 var Bullet = require('../components/bullet');
 var Character = require('../components/character');
+var DoorInfo = require('../components/doorInfo');
+var ItemInfo = require('../components/itemInfo');
+var ItemList = require('../components/itemList');
+var ChestInfo = require('../components/chestInfo');
 var TileMapGenerator = require('../TileMapGenerator');
 var MapSchemaCreator = require('./map/MapSchemaCreator');
 var MapFromSchemaCreator = require('./map/MapFromSchemaCreator');
@@ -19,18 +23,16 @@ var EntityCreator = function() {
 }
 
 EntityCreator.prototype.createPlayer = function(name, socket) {
-    let playerInfoComponent = new PlayerInfo(name, socket);
-    let playerGraphicComponent = new Graphics("player");
-    let playerPositionComponent = new Position(500, 500);
-    let playerMotionComponent = new Motion(0, 0, 150);
-    let playerGeometryComponent = new Geometry.Square(Config.TILE_SIZE);
-    let player = new Entity([
-      playerInfoComponent,
-      playerGraphicComponent,
-      playerPositionComponent,
-      playerMotionComponent,
-      playerGeometryComponent
-    ], 'player');
+    let info = new PlayerInfo(name, socket);
+    let graphics  = new Graphics("player");
+    let position = new Position(500, 500);
+    let motion = new Motion(0, 0, 150);
+    let geometry = new Geometry.Square(Config.TILE_SIZE);
+    let itemList = new ItemList();
+    let player = new Entity(
+        [info, graphics, position, motion, geometry, itemList], 
+        'player'
+    );
     return player;
 }
 
@@ -41,6 +43,7 @@ EntityCreator.prototype.createEnemy = function(x, y) {
     let enemyInfo = new EnemyInfo();
     let geometry = new Geometry.Square(Config.TILE_SIZE);
     let character = new Character(2);
+    let itemList = new ItemList();
     return new Entity([position, motion, graphics, enemyInfo, geometry, character]);
 }
 
@@ -69,6 +72,28 @@ EntityCreator.prototype.createBullet = function(player, x, y, xVelocity, yVeloci
     return new Entity([position, motion, graphics, bullet, geometry]);
 }
 
+EntityCreator.prototype.createDoor = function(x, y, keyId=null) {
+    let info = new DoorInfo(keyId);
+    let position = new Position(x, y);
+    let graphics = new Graphics("doorClosed");
+    let geometry = new Geometry.Square(Config.TILE_SIZE);
+    return new Entity([info, position, graphics, geometry]);
+}
+
+EntityCreator.prototype.createKey = function() {
+    let info = new ItemInfo("key");
+    return new Entity([info]);
+}
+
+EntityCreator.prototype.createChest = function(x, y, items=[]) {
+    let info = new ChestInfo();
+    let position = new Position(x, y);
+    let graphics = new Graphics("chest");
+    let geometry = new Geometry.Square(Config.TILE_SIZE);
+    let itemList = new ItemList(items);
+    return new Entity([info, position, graphics, geometry, itemList]);
+}
+
 EntityCreator.prototype.recreate = function(entity) {
     return new Entity(this._recreateComponents(entity.components), entity.name, entity.id);
 }
@@ -95,7 +120,11 @@ EntityCreator.prototype._createComponentFactory = function() {
             "Motion": () => { return new Motion(); },
             "Geometry": () => { return {}; },
             "Bullet": () => { return new Bullet(); },
-            "Character": () => { return new Character(); }
+            "Character": () => { return new Character(); },
+            "DoorInfo": () => { return new DoorInfo(); },
+            "ItemInfo": () => { return new ItemInfo(); },
+            "ItemList": () => { return new ItemList(); },
+            "ChestInfo": () => { return new ChestInfo(); }
         }
     }
 

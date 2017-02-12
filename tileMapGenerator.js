@@ -13,8 +13,10 @@ TileMapGenerator.prototype.generate = function(width, height, nbOfSpawns) {
         .putBorders()
         .cellularAutomata(5)
         .putBorders()
-        .generateSpawnPoints(nbOfSpawns);
-    return new TileMap(this._map, this._width, this._height, this._spawnPoints);
+        .generateSpawnPoints(nbOfSpawns)
+        .generateDoors(10);
+
+    return new TileMap(this._map, this._width, this._height, this._spawnPoints, this._doorPoints);
 }
 
 TileMapGenerator.prototype.generateSpawnPoints = function(nbOfSpawns) {
@@ -25,6 +27,19 @@ TileMapGenerator.prototype.generateSpawnPoints = function(nbOfSpawns) {
         if(this._map[y][x] == this.EMPTY_TILE) {
             this._spawnPoints.push({ x: x, y: y });
             nbOfSpawns -= 1;
+        }
+    }
+    return this;
+}
+
+TileMapGenerator.prototype.generateDoors = function(nbOfDoors) {
+    this._doorPoints = [];
+    while(nbOfDoors) {
+        let x = Math.floor(Math.random() * this._width);
+        let y = Math.floor(Math.random() * this._height);
+        if(this._map[x][y] === this.EMPTY_TILE) {
+            this._doorPoints.push({ x: x, y: y });
+            nbOfDoors -= 1;
         }
     }
     return this;
@@ -101,5 +116,6 @@ TileMapGenerator.prototype.createEmptyMap = function(width, height, fill = this.
     };
     return map
 }
+
 
 module.exports = TileMapGenerator;

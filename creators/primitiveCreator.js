@@ -8,7 +8,10 @@ var PrimitiveCreator = function(spritesRepository) {
     this._creators = {
         player: this.createPlayerPrimitive,
         zombie: this.createZombiePrimitive,
-        bullet: this.createBulletPrimitive
+        bullet: this.createBulletPrimitive,
+        doorOpen: this.createDoorPrimitive.bind(this, "open"),
+        doorClosed: this.createDoorPrimitive.bind(this, "closed"),
+        chest: this.createChestPrimitive
     };
 }
 
@@ -58,5 +61,18 @@ PrimitiveCreator.prototype.createZombiePrimitive = function() {
 PrimitiveCreator.prototype.createBulletPrimitive = function() {
     return new Circle(0, 0, 12).fill("red");
 }
+
+PrimitiveCreator.prototype.createDoorPrimitive = function(state) {
+    let colors = {
+        open: "green",
+        closed: "red"
+    }
+    return new Rect(-24, -24, 48, 48).fill(colors[state]);
+}
+
+PrimitiveCreator.prototype.createChestPrimitive = function(state) {
+    return new Rect(-24, -24, 48, 48).fill("brown");
+}
+
 
 module.exports = PrimitiveCreator;

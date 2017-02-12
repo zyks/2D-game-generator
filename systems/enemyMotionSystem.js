@@ -28,9 +28,9 @@ EnemyMotionSystem.prototype._updateMotion = function(enemy) {
         let x = playerPos.x - position.x;
         let y = playerPos.y - position.y;
         let length = Math.sqrt(x*x + y*y);
-        let speed = 100;
-        let xVel = x / length * speed;
-        let yVel = y / length * speed;
+        // let speed = 100;
+        let xVel = x / length * motion.maxVelocity;
+        let yVel = y / length * motion.maxVelocity;
         motion.set(xVel, yVel);
     }
 }

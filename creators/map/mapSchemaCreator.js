@@ -5,42 +5,52 @@ var MapSchemaCreator = function() {
 }
 
 MapSchemaCreator.prototype.create = function(width, height) {
+    let startPos = { x: 2, y: 2 };
+    let startNonTerminal = { name: "Start", pos: startPos, references: {} };
     this._width = width;
     this._height = height;
     this.squares = this._createEmptySchema(this._height, this._width, null);
     this.edges = this._createEmptyEdgesSchema(this._height, this._width);
-    this.squares[2][2] = "Start";
-    this.nonTerminalsPos = [{ x: 2, y: 2 }];
-    while(this.nonTerminalsPos.length > 0) {
-        let nonTerminalPos = this.nonTerminalsPos.shift();
-        let nonTerminal = this.squares[nonTerminalPos.y][nonTerminalPos.x];
-        this._processNonTerminal(nonTerminal, nonTerminalPos);
+    this.squares[startPos.y][startPos.x] = startNonTerminal;
+    this.nonTerminals = [startNonTerminal];
+    while(this.nonTerminals.length > 0) {
+        let nonTerminal = this.nonTerminals.shift();
+        this._processNonTerminal(nonTerminal);
     }
-    console.log(this.squares);
     return { squares: this.squares, edges: this.edges };
 }
 
-MapSchemaCreator.prototype._processNonTerminal = function(nonTerminal, nonTerminalPos) {
-    let availablePositions = this._getFreeNeighbours(nonTerminalPos.x, nonTerminalPos.y);
-    availablePositions.push(nonTerminalPos);
+MapSchemaCreator.prototype._processNonTerminal = function(nonTerminal) {
+    let availablePositions = this._getFreeNeighbours(nonTerminal.pos.x, nonTerminal.pos.y);
+    availablePositions.push(nonTerminal.pos);
     let availableProductions = this._getAvailableProductions(nonTerminal, availablePositions);
     let production = this._pickProduction(availableProductions);
-    console.log(nonTerminal, " --> ", production.nonTerminals);
+    console.log(nonTerminal.name, " --> ", production.nonTerminals);
+    let newlyCreated = [];
     for(let t of production.nonTerminals) {
         let pos = availablePositions.pop();
-        this.squares[pos.y][pos.x] = t;
-        if(this._isNonTerminal(t))
-            this.nonTerminalsPos.push(pos);
-        this._updateEdges(pos, nonTerminalPos);
+        let newT = { name: t, pos: pos, references: {} };
+        this.squares[pos.y][pos.x] = newT;
+        if(this._isNonTerminal(newT))
+            this.nonTerminals.push(newT);
+        if(!this._isNonTerminal(newT) || newT.name == nonTerminal.name)
+            newT.references = nonTerminal.references || {};
+        this._updateEdges(pos, nonTerminal.pos);
+        newlyCreated.push(newT);
+    }
+    if(!production.references) return;
+    for(let r of production.references) {
+        newlyCreated[r.from].references[r.name] = { name: newlyCreated[r.to].name, pos: newlyCreated[r.to].pos };
+        newlyCreated[r.to].references[r.name] = { name: newlyCreated[r.from].name, pos: newlyCreated[r.from].pos };
     }
 }
 
 MapSchemaCreator.prototype._isNonTerminal = function(t) {
-    return t[0] == t[0].toUpperCase();
+    return t.name[0] == t.name[0].toUpperCase();
 }
 
 MapSchemaCreator.prototype._getAvailableProductions = function(nonTerminal, availablePositions) {
-    return this._productions[nonTerminal].filter((production) => {
+    return this._productions[nonTerminal.name].filter((production) => {
         return production.nonTerminals.length <= availablePositions.length;
     });
 }

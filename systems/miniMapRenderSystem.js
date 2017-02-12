@@ -18,6 +18,7 @@ MiniMapRenderSystem.prototype.update = function(deltaTime) {
     this._renderLayers();
     this._renderEnemies();
     this._renderPlayers();
+    this._renderChests();
 }
 
 MiniMapRenderSystem.prototype.end = function() {
@@ -69,6 +70,12 @@ MiniMapRenderSystem.prototype._renderEnemies = function() {
     let enemies = this._engine.entities.getByGroup('enemies');
     for (let enemy of enemies)
         this._renderEntity(enemy, "green");
+}
+
+MiniMapRenderSystem.prototype._renderChests = function() {
+    let chests = this._engine.entities.getByGroup('chests');
+    for (let chest of chests)
+        this._renderEntity(chest, "brown");
 }
 
 MiniMapRenderSystem.prototype._renderPlayers = function() {

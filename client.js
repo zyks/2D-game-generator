@@ -80,6 +80,7 @@ Client.prototype._registerComponentsGroups = function() {
     this._engine.entities.registerGroup('graphicsEntities', ['Graphics', 'Position']);
     this._engine.entities.registerGroup('enemies', ['EnemyInfo']);
     this._engine.entities.registerGroup('bullets', ['Bullet']);
+    this._engine.entities.registerGroup('chests', ['ChestInfo']);
 }
 
 Client.prototype._addSystems = function() {

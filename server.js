@@ -48,7 +48,9 @@ Server.prototype._initializeMap = function() {
     let map = this._entityCreator.createMap();
     this._engine.entities.add(map);
     let adjustPosition = function(e) {
-        return { x: (e.x + 0.5) * Config.TILE_SIZE, y: (e.y + 0.5) * Config.TILE_SIZE } 
+        e.x = (e.x + 0.5) * Config.TILE_SIZE;
+        e.y = (e.y + 0.5) * Config.TILE_SIZE;
+        return e;
     }
     let spawns = map.components.get("TileMap").spawns.map(adjustPosition);
     let doors = map.components.get("TileMap").doors.map(adjustPosition);
@@ -60,8 +62,9 @@ Server.prototype._initializeMap = function() {
         this._engine.entities.add(
             this._entityCreator.createDoor(door.x, door.y, key.id)
         );
+        console.log(door);
         this._engine.entities.add(
-            this._entityCreator.createChest(door.x - Config.TILE_SIZE, door.y, [key.id])
+            this._entityCreator.createChest(door.key.x * Config.TILE_SIZE, door.key.y * Config.TILE_SIZE, [key.id])
         );
     }
 }

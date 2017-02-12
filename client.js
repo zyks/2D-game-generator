@@ -88,9 +88,9 @@ Client.prototype._addSystems = function() {
         { key: KeyCodes.D, name: "MOVE_RIGHT" },
         { key: KeyCodes.SHIFT, name: "SHOOT" }
     ]
-    // this._engine.addSystem(
-    //   new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
-    // , 0);
+    this._engine.addSystem(
+      new TileMapRenderSystem(this._engine, this._ctx, this._sprites.get("atlas"))
+    , 0);
     this._engine.addSystem(
       new GraphicEntityRenderSystem(this._engine, this._ctx)
     , 1);

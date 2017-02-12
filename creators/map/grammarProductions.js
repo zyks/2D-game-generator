@@ -3,6 +3,7 @@ var GrammarProductions = {
         { nonTerminals: ["Corridor", "Corridor"], probability: 1.0 }
     ],
     "Quest": [
+        { nonTerminals: ["Corridor", "Key", "Door"], probability: 1.0 },
         { nonTerminals: ["Key","Door"], probability: 1.0 },
         { nonTerminals: ["Room"], probability: 0.1 }
     ],

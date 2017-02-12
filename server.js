@@ -52,8 +52,8 @@ Server.prototype._initializeMap = function() {
     }
     let spawns = map.components.get("TileMap").spawns.map(adjustPosition);
     let doors = map.components.get("TileMap").doors.map(adjustPosition);
-    // for(let spawn of spawns)
-    //     this._engine.entities.add(this._entityCreator.createEnemy(spawn.x, spawn.y));
+    for(let spawn of spawns)
+        this._engine.entities.add(this._entityCreator.createEnemy(spawn.x, spawn.y));
     for (let door of doors) {
         let key = this._entityCreator.createKey();
         this._engine.entities.add(key);

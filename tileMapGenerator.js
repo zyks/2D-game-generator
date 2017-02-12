@@ -22,7 +22,7 @@ TileMapGenerator.prototype.generateSpawnPoints = function(nbOfSpawns) {
     while(nbOfSpawns) {
         x = Math.floor(Math.random() * this._width);
         y = Math.floor(Math.random() * this._height);
-        if(this._map[x][y] == this.EMPTY_TILE) {
+        if(this._map[y][x] == this.EMPTY_TILE) {
             this._spawnPoints.push({ x: x, y: y });
             nbOfSpawns -= 1;
         }
@@ -94,7 +94,7 @@ TileMapGenerator.prototype.initMap = function() {
     return this;
 };
 
-TileMapGenerator.prototype.createEmptyMap = function(width, height) {
+TileMapGenerator.prototype.createEmptyMap = function(width, height, fill = this.EMPTY_TILE) {
     let map = new Array(width);
     for (var i = 0; i < height; i++) {
       map[i] = new Array(height).fill(this.EMPTY_TILE);

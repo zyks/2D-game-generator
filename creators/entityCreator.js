@@ -9,6 +9,9 @@ var Geometry = require('../components/geometry');
 var Bullet = require('../components/bullet');
 var Character = require('../components/character');
 var TileMapGenerator = require('../TileMapGenerator');
+var MapSchemaCreator = require('./map/MapSchemaCreator');
+var MapFromSchemaCreator = require('./map/MapFromSchemaCreator');
+var CellularAutomataMap = require('./map/CellularAutomataMap');
 var Config = require('../config');
 
 var EntityCreator = function() {
@@ -43,8 +46,10 @@ EntityCreator.prototype.createEnemy = function(x, y) {
 
 
 EntityCreator.prototype.createMap = function() {
-    var tileMapGenerator = new TileMapGenerator();
-    var tileMap = tileMapGenerator.generate(50, 50, 18);
+    console.log(MapSchemaCreator);
+    var schema = new MapSchemaCreator().create(6, 6);
+    var tileMap = new MapFromSchemaCreator(schema).create();
+    tileMap.tiles = new CellularAutomataMap().run(tileMap.tiles, Math.floor(Math.random()*3));
     var map = new Entity([tileMap], 'map');
     return map;
 };
